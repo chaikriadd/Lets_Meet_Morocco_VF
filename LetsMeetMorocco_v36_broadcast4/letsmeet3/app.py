@@ -32,12 +32,6 @@ import os, json, secrets, hashlib
 from functools import wraps
 
 # Flask-Compress (compression gzip des réponses)
-try:
-    from flask_compress import Compress
-    Compress(app)
-    logger.info("Flask-Compress activé")
-except ImportError:
-    logger.warning("Flask-Compress non installé. pip install flask-compress")
 
 # Flask-Mail (optionnel — import seulement ici, init après app)
 try:
@@ -50,7 +44,12 @@ except ImportError:
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "letsmeetmorocco2025-dev-only")
-
+try:
+    from flask_compress import Compress
+    Compress(app)
+    logger.info("Flask-Compress activé")
+except ImportError:
+    logger.warning("Flask-Compress non installé. pip install flask-compress")
 # Initialiser Flask-Mail APRÈS app (fix bug init avant création de app)
 if MAIL_ENABLED:
     try:
