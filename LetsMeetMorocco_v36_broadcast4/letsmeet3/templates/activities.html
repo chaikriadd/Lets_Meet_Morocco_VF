@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}Activités — Let's Meet Morocco{% endblock %}
+{% set IMG = {
+  'Football':                    'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80',
+  'Basketball':                  'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&q=80',
+  'Padel':                       'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&q=80',
+  'Tennis':                      'https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=600&q=80',
+  'Volleyball':                  'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=600&q=80',
+  'Course à pied':               'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80',
+  'Natation':                    'https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=600&q=80',
+  'Yoga':                        'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80',
+  'Salle de sport':              'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80',
+  'Vélo':                        'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&q=80',
+  'Marche':                      'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=600&q=80',
+  'Projet de fin d\'études':    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80',
+  'Café entre étudiants':        'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=600&q=80',
+  'Sortie restaurant':           'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80',
+  'Glace':                       'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&q=80',
+  'Snack':                       'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=600&q=80',
+  'Cinéma':                      'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=600&q=80',
+  'Jeux (PlayStation, jeux de société)': 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&q=80',
+  'Explorer Marrakech':          'https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=600&q=80',
+  'Visiter des lieux culturels': 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=600&q=80',
+  'Regarder le coucher de soleil':'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80',
+  'Shopping':                    'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80',
+  'Explorer la ville':           'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&q=80'
+} %}
+{% set COL = {'Football':'#2DB54C','Course à pied':'#1565C0','Café entre étudiants':'#C67C3A','Yoga':'#7B2D8B','Natation':'#0077B6','Vélo':'#2DB54C','Basketball':'#E8541A','Marche':'#2DB54C','Salle de sport':'#E8541A','Sortie restaurant':'#C67C3A','Cinéma':'#B71C1C','Shopping':'#AD1457','Explorer la ville':'#006064','Visiter des lieux culturels':'#00B4D8','Regarder le coucher de soleil':'#E65100','Glace':'#0077B6'} %}
+{% set EMO = {'Football':'⚽','Course à pied':'🏃','Café entre étudiants':'☕','Yoga':'🧘','Natation':'🏊','Vélo':'🚴','Basketball':'🏀','Marche':'🚶','Salle de sport':'💪','Sortie restaurant':'🍽️','Cinéma':'🎬','Shopping':'🛍️','Explorer la ville':'🏙️','Visiter des lieux culturels':'🏛️','Regarder le coucher de soleil':'🌅','Glace':'🍦','Snack':'🥪','Jeux (PlayStation, jeux de société)':'🎮'} %}
+{% block content %}
+<div class="main">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <div class="sec-title">🎯 Activités</div>
+    <a href="/create_activity" class="btn btn-orange">➕ Créer</a>
+  </div>
+
+  <!-- Filtres -->
+  <div class="card" style="padding:16px;margin-bottom:20px">
+    <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+      <div class="form-group" style="margin:0;flex:1;min-width:140px">
+        <label>🔍 Mot-clé</label>
+        <input type="text" name="q" value="{{fkw}}" placeholder="Rechercher...">
+      </div>
+      <div class="form-group" style="margin:0;flex:1;min-width:130px">
+        <label>Type</label>
+        <select name="type"><option value="">Tous</option>
+        {% for t in types %}<option {{'selected' if ft==t}}>{{t}}</option>{% endfor %}</select>
+      </div>
+      <div class="form-group" style="margin:0;flex:1;min-width:130px">
+        <label>Ville</label>
+        <select name="ville"><option value="">Toutes</option>
+        {% for v in villes %}<option {{'selected' if fv==v}}>{{v}}</option>{% endfor %}</select>
+      </div>
+      <button class="btn btn-orange" type="submit">Filtrer</button>
+      <a href="/activities" class="btn btn-gray">↺</a>
+    </form>
+  </div>
+
+  <!-- Catégories -->
+  <div class="cat-scroll-section">
+    <div class="cat-scroll">
+      <a href="/activities" class="cat-pill {{'active' if not ft}}"><span class="emoji">🔥</span> Tout</a>
+      <a href="/activities?type=Football" class="cat-pill {{'active' if ft=='Football'}}"><span class="emoji">⚽</span> Football</a>
+      <a href="/activities?type=Course+à+pied" class="cat-pill {{'active' if ft=='Course à pied'}}"><span class="emoji">🏃</span> Course</a>
+      <a href="/activities?type=Yoga" class="cat-pill {{'active' if ft=='Yoga'}}"><span class="emoji">🧘</span> Yoga</a>
+      <a href="/activities?type=Café+entre+étudiants" class="cat-pill {{'active' if ft=='Café entre étudiants'}}"><span class="emoji">☕</span> Café</a>
+      <a href="/activities?type=Natation" class="cat-pill {{'active' if ft=='Natation'}}"><span class="emoji">🏊</span> Natation</a>
+      <a href="/activities?type=Vélo" class="cat-pill {{'active' if ft=='Vélo'}}"><span class="emoji">🚴</span> Vélo</a>
+      <a href="/activities?type=Basketball" class="cat-pill {{'active' if ft=='Basketball'}}"><span class="emoji">🏀</span> Basketball</a>
+      <a href="/activities?type=Explorer+la+ville" class="cat-pill"><span class="emoji">🏙️</span> Explorer</a>
+      <a href="/activities?type=Regarder+le+coucher+de+soleil" class="cat-pill"><span class="emoji">🌅</span> Coucher soleil</a>
+    </div>
+  </div>
+
+  {% if acts %}
+  <div style="font-size:13px;color:#999;margin-bottom:16px">{{acts|length}} activité(s) trouvée(s)</div>
+  <div class="grid3">
+  {% for act in acts %}
+    {% set img = IMG.get(act.type_activite, 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80') %}
+    {% set col = COL.get(act.type_activite, '#E8541A') %}
+    {% set emo = EMO.get(act.type_activite, '🎯') %}
+    <a href="/activity/{{act.id}}" class="act-card">
+      <div class="act-card-img" style="background-image:url('{{img}}')"></div>
+      <div class="act-card-overlay"></div>
+      <div class="act-card-status {{'s-full' if act.est_complete() else 's-open'}}">● {{act.statut}}</div>
+      <div class="act-card-body">
+        <div class="act-card-type">{{emo}} {{act.type_activite}}</div>
+        <div class="act-card-title">{{act.titre}}</div>
+        <div class="act-card-meta">
+          <span>📅 {{act.date_activite}} {{act.heure}}</span>
+          <span>📍 {{act.lieu|truncate(18,true,'')}}</span>
+        </div>
+        <div class="act-card-avs">
+          {% for p in act.participants_list[:3] %}
+          <div class="act-card-av" style="background:{{p.get_avatar_color()}}">
+            {% if p.get_photo_url() %}<img src="{{p.get_photo_url()}}">{% else %}{{p.prenom[0]}}{% endif %}
+          </div>
+          {% endfor %}
+          {% if act.nb_participants() > 3 %}<span class="act-card-av-more">+{{act.nb_participants()-3}}</span>{% endif %}
+        </div>
+        <div class="act-card-prog-wrap">
+          <div class="act-card-prog"><div class="act-card-prog-bar" style="width:{{act.pourcentage()}}%;background:linear-gradient(90deg,{{col}},{{col}}aa)"></div></div>
+          <div class="act-card-prog-txt">{{act.nb_participants()}}/{{act.nb_max}}</div>
+        </div>
+      </div>
+    </a>
+  {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:60px 20px">
+    <div style="font-size:48px;margin-bottom:12px">😕</div>
+    <div style="font-size:18px;font-weight:600;margin-bottom:8px">Aucune activité trouvée</div>
+    <p style="color:#999;margin-bottom:20px">Essaie d'autres filtres ou crée la première !</p>
+    <a href="/create_activity" class="btn btn-orange">➕ Créer une activité</a>
+  </div>
+  {% endif %}
+
+  <!-- Pagination -->
+  {% if total_pages > 1 %}
+  <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin:28px 0;flex-wrap:wrap">
+    {% if page > 1 %}
+    <a href="?page={{page-1}}&q={{fkw}}&type={{ft}}&ville={{fv}}"
+       style="padding:8px 16px;border-radius:10px;border:1.5px solid var(--border);
+              background:var(--white);color:var(--dark);text-decoration:none;font-size:13px;font-weight:500">
+      ← Précédent
+    </a>
+    {% endif %}
+    {% for p in range(1, total_pages+1) %}
+      {% if p == page %}
+      <span style="padding:8px 16px;border-radius:10px;background:var(--orange);
+                   color:#fff;font-size:13px;font-weight:700">{{p}}</span>
+      {% elif p <= 3 or p >= total_pages-2 or (p >= page-1 and p <= page+1) %}
+      <a href="?page={{p}}&q={{fkw}}&type={{ft}}&ville={{fv}}"
+         style="padding:8px 16px;border-radius:10px;border:1.5px solid var(--border);
+                background:var(--white);color:var(--dark);text-decoration:none;font-size:13px">
+        {{p}}
+      </a>
+      {% elif p == 4 and page > 5 %}
+      <span style="color:var(--gray);font-size:13px">…</span>
+      {% endif %}
+    {% endfor %}
+    {% if page < total_pages %}
+    <a href="?page={{page+1}}&q={{fkw}}&type={{ft}}&ville={{fv}}"
+       style="padding:8px 16px;border-radius:10px;border:1.5px solid var(--border);
+              background:var(--white);color:var(--dark);text-decoration:none;font-size:13px;font-weight:500">
+      Suivant →
+    </a>
+    {% endif %}
+    <span style="font-size:12px;color:var(--gray);margin-left:8px">
+      {{total}} activité(s) · page {{page}}/{{total_pages}}
+    </span>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

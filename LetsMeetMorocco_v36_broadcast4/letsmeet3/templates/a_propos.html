@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}À propos — Let's Meet Morocco{% endblock %}
+{% block content %}
+<div class="main" style="max-width:780px">
+  <!-- Hero -->
+  <div style="background:linear-gradient(135deg,var(--nav-bg),#0a1f2e);border-radius:20px;padding:48px 40px;text-align:center;margin-bottom:24px;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(232,84,26,.15),transparent 65%)"></div>
+    <div style="position:relative;z-index:1">
+      <img src="{{ url_for('static',filename='img/logo.png') }}" style="height:72px;width:72px;object-fit:contain;border-radius:12px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,.15)">
+      <h1 style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:#fff;margin-bottom:12px">Let's Meet Morocco</h1>
+      <p style="font-size:16px;color:rgba(255,255,255,.7);max-width:500px;margin:0 auto;line-height:1.7">
+        Rencontre des gens, vis des expériences, découvre ta ville autrement.
+      </p>
+    </div>
+  </div>
+
+  <!-- Mission -->
+  <div class="card" style="margin-bottom:16px">
+    <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:12px">🎯 Notre mission</h2>
+    <p style="font-size:14px;color:#555;line-height:1.8">
+      Au Maroc, des milliers de jeunes cherchent à sortir, faire du sport, partager un café ou explorer leur ville —
+      mais ne savent pas comment trouver des personnes qui partagent les mêmes envies.
+    </p>
+    <p style="font-size:14px;color:#555;line-height:1.8;margin-top:10px">
+      <strong>Let's Meet Morocco</strong> connecte ces personnes. Tu publies une activité, des gens rejoignent,
+      vous vous rencontrez. Simple, gratuit, authentique.
+    </p>
+  </div>
+
+  <!-- Stats -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px">
+    {% for num, label, icon in [('100%','Gratuit','🆓'),('18+','Âge minimum','🔞'),('🇲🇦','Made in Morocco','❤️')] %}
+    <div style="background:var(--white);border-radius:16px;padding:20px;text-align:center;border:1px solid var(--border)">
+      <div style="font-size:28px;margin-bottom:6px">{{icon}}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--orange)">{{num}}</div>
+      <div style="font-size:12px;color:var(--gray);margin-top:3px">{{label}}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Fonctionnalités -->
+  <div class="card" style="margin-bottom:16px">
+    <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:14px">✨ Ce que tu peux faire</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      {% for icon, feat in [('⚽','Organiser ou rejoindre des activités sportives'),('☕','Trouver des gens pour un café ou une sortie'),('🗺️','Découvrir des activités près de toi sur la carte'),('💬','Chatter avec les participants'),('👥','Construire ton réseau social local'),('🏆','Gagner des badges et monter dans le classement')] %}
+      <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:#FAF9F7;border-radius:12px">
+        <span style="font-size:20px">{{icon}}</span>
+        <span style="font-size:13px;color:#555;line-height:1.5">{{feat}}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <div class="card">
+    <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:12px">📬 Nous contacter</h2>
+    <p style="font-size:14px;color:#555;line-height:1.8">
+      Une suggestion, un bug, une question ?<br>
+      Écris-nous à <a href="mailto:admin@letsmeet.ma" style="color:var(--orange);font-weight:600">admin@letsmeet.ma</a>
+    </p>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap">
+      <a href="/cgu" class="btn btn-outline" style="font-size:12px;padding:6px 14px">CGU</a>
+      <a href="/confidentialite" class="btn btn-outline" style="font-size:12px;padding:6px 14px">Confidentialité</a>
+      <a href="/mentions-legales" class="btn btn-outline" style="font-size:12px;padding:6px 14px">Mentions légales</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

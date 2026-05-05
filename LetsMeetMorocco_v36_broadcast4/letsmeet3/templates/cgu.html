@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}CGU — Let's Meet Morocco{% endblock %}
+{% block content %}
+<div class="main" style="max-width:780px">
+  <div class="card">
+    <h1 style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px">Conditions Générales d'Utilisation</h1>
+    <p style="color:var(--gray);font-size:13px;margin-bottom:28px">Dernière mise à jour : Avril 2026</p>
+
+    {% for title, body in [
+      ("1. Acceptation des conditions", "En créant un compte sur Let's Meet Morocco, vous acceptez pleinement et sans réserve les présentes CGU. Si vous n'acceptez pas ces conditions, vous ne devez pas utiliser l'application."),
+      ("2. Âge minimum", "L'utilisation de l'application est réservée aux personnes âgées de 18 ans et plus. En vous inscrivant, vous certifiez avoir l'âge requis."),
+      ("3. Comportement attendu", "Vous vous engagez à : respecter tous les membres, ne pas harceler ni intimider d'autres utilisateurs, ne pas publier de contenu offensant, illégal ou inapproprié, ne pas utiliser l'app à des fins commerciales sans autorisation."),
+      ("4. Activités organisées", "Let's Meet Morocco est une plateforme de mise en relation. L'application n'est pas responsable du déroulement des activités organisées, des accidents, ni des comportements des participants."),
+      ("5. Contenu utilisateur", "Vous conservez la propriété de vos contenus (photos, textes). En les publiant, vous accordez à Let's Meet Morocco une licence non-exclusive pour les afficher dans l'application."),
+      ("6. Suspension de compte", "Nous nous réservons le droit de suspendre ou supprimer tout compte qui ne respecterait pas ces CGU, notamment en cas de signalements répétés ou de comportement inapproprié."),
+      ("7. Modification des CGU", "Nous pouvons modifier ces CGU à tout moment. Les utilisateurs seront informés par notification dans l'application. L'utilisation continue de l'app vaut acceptation des nouvelles conditions."),
+      ("8. Loi applicable", "Ces CGU sont régies par le droit marocain. Tout litige sera soumis aux tribunaux compétents de Marrakech.")
+    ] %}
+    <h2 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin:22px 0 8px">{{title}}</h2>
+    <p style="font-size:14px;color:#555;line-height:1.8">{{body}}</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Détail — {{u.prenom}} {{u.nom}} · Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--nav:#0D2B12;--green:#2DB54C;--orange:#E8541A;--red:#E84545;--blue:#00B4D8;--gold:#F5A623;--gray:#6B7280;--border:#E5E7EB;--white:#fff;--dark:#111827;--light:#F9FAFB;--sidebar-w:240px}
+body{font-family:'DM Sans',sans-serif;background:#F3F4F6;color:var(--dark)}
+
+/* Sidebar */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--nav);z-index:100;display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-logo{padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:8px}
+.sidebar-logo img{height:34px;width:34px;border-radius:8px;object-fit:contain}
+.sidebar-logo-txt{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;line-height:1.2}
+.sidebar-logo-txt span{color:var(--gold);font-size:10px;letter-spacing:1px;display:block}
+.sl{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;padding:12px 20px 5px}
+.slink{display:flex;align-items:center;gap:10px;padding:8px 20px;font-size:13px;font-weight:500;color:rgba(255,255,255,.6);text-decoration:none;border-left:3px solid transparent;transition:all .15s}
+.slink:hover{background:rgba(255,255,255,.06);color:#fff}
+.slink.active{background:rgba(45,181,76,.12);color:#fff;border-left-color:var(--green)}
+.slink svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid rgba(255,255,255,.08)}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px}
+
+/* Main */
+.main{margin-left:var(--sidebar-w);min-height:100vh}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.back-btn{display:flex;align-items:center;gap:6px;color:var(--gray);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:8px;border:1px solid var(--border);transition:all .15s}
+.back-btn:hover{background:var(--light);color:var(--dark)}
+.topbar-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--dark)}
+.topbar-actions{display:flex;gap:8px}
+.btn-action{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;border:none;transition:all .15s}
+.btn-block-top{background:rgba(232,84,26,.08);color:var(--orange);border:1px solid rgba(232,84,26,.2)}
+.btn-block-top:hover{background:rgba(232,84,26,.15)}
+.btn-unblock-top{background:rgba(45,181,76,.08);color:var(--green);border:1px solid rgba(45,181,76,.2)}
+.btn-unblock-top:hover{background:rgba(45,181,76,.15)}
+.btn-delete-top{background:rgba(232,69,69,.08);color:var(--red);border:1px solid rgba(232,69,69,.2)}
+.btn-delete-top:hover{background:rgba(232,69,69,.15)}
+
+/* Content */
+.content{padding:24px 28px}
+
+/* Hero card */
+.hero-card{background:linear-gradient(135deg,#0D2B12 0%,#1a5c2a 60%,#0a2030 100%);border-radius:16px;padding:28px 32px;display:flex;align-items:center;gap:24px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero-card::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.03)}
+.hero-av{width:80px;height:80px;border-radius:50%;border:3px solid rgba(255,255,255,.15);object-fit:cover;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:#fff}
+.hero-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.hero-info{flex:1}
+.hero-name{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff;margin-bottom:4px}
+.hero-meta{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:10px}
+.hero-badges{display:flex;gap:8px;flex-wrap:wrap}
+.hbadge{padding:5px 12px;border-radius:100px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
+.hbadge.active{background:rgba(45,181,76,.2);color:#4ADE80;border:1px solid rgba(45,181,76,.3)}
+.hbadge.blocked{background:rgba(232,69,69,.2);color:#F87171;border:1px solid rgba(232,69,69,.3)}
+.hbadge.pending{background:rgba(245,166,35,.2);color:#FCD34D;border:1px solid rgba(245,166,35,.3)}
+.hbadge.rating{background:rgba(245,166,35,.15);color:#F5A623;border:1px solid rgba(245,166,35,.2)}
+.hero-date{position:absolute;top:24px;right:28px;text-align:right;color:rgba(255,255,255,.5);font-size:12px}
+.hero-date span{display:block;font-size:16px;font-weight:700;color:#fff;margin-top:2px}
+
+/* Alert blocked */
+.alert-blocked{background:rgba(232,69,69,.06);border:1px solid rgba(232,69,69,.2);border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:13px;color:#B91C1C}
+.alert-blocked svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+
+/* KPI mini */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi-mini{background:#fff;border-radius:12px;padding:16px 18px;border:1px solid var(--border);text-align:center}
+.kpi-mini-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--dark)}
+.kpi-mini-lbl{font-size:12px;color:var(--gray);margin-top:3px}
+.kpi-mini-icon{font-size:20px;margin-bottom:6px}
+
+/* Grid */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:8px}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:11px 18px;border-bottom:1px solid #FAFAFA;font-size:13px}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--gray);font-weight:500}
+.info-val{color:var(--dark);font-weight:500;text-align:right;max-width:220px;word-break:break-all}
+
+/* Activities list */
+.act-item{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid #FAFAFA;font-size:13px}
+.act-item:last-child{border-bottom:none}
+.act-type{font-size:10px;font-weight:600;background:rgba(0,180,216,.08);color:#0E7490;padding:2px 8px;border-radius:5px}
+.act-date{font-size:11px;color:var(--gray);margin-left:auto}
+
+/* Review */
+.review-item{padding:12px 18px;border-bottom:1px solid #FAFAFA;font-size:13px}
+.review-item:last-child{border-bottom:none}
+.review-stars{color:var(--gold);font-size:14px;margin-bottom:3px}
+.review-text{color:var(--gray);font-size:12px;line-height:1.5}
+
+/* Empty */
+.empty{padding:32px;text-align:center;color:var(--gray);font-size:13px}
+
+/* Modal */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center}
+.modal-ov.open{display:flex}
+.modal-box{background:#fff;border-radius:18px;padding:32px;max-width:400px;width:90%;text-align:center}
+.modal-icon{width:52px;height:52px;border-radius:50%;background:rgba(232,69,69,.1);margin:0 auto 14px;display:flex;align-items:center;justify-content:center}
+.modal-icon svg{width:22px;height:22px;stroke:var(--red);fill:none;stroke-width:2}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:12px}
+.modal-warn{background:rgba(232,69,69,.05);border:1px solid rgba(232,69,69,.15);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:20px}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-cancel{padding:10px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-confirm-del{padding:10px;border:none;border-radius:10px;background:var(--red);color:#fff;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:block}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img src="/static/img/logo.png" alt="">
+    <div class="sidebar-logo-txt">Let's Meet<span>ADMIN</span></div>
+  </div>
+  <div class="sl">Navigation</div>
+  <a href="/admin" class="slink"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+  <a href="/admin#users" class="slink active"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Utilisateurs</a>
+  <a href="/admin#activities" class="slink"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Activités</a>
+  <div class="sl">Modération</div>
+  <a href="/admin#signalements" class="slink"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Signalements</a>
+  <a href="/admin#attente" class="slink"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>En attente</a>
+  <div class="sl">Système</div>
+  <a href="/admin#journal" class="slink"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Journal</a>
+  <a href="/admin/export_csv" class="slink"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</a>
+  <a href="/admin/logout" class="slink" style="color:rgba(232,69,69,.7);margin-top:6px"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Déconnexion</a>
+  <div class="sidebar-footer">
+    <span class="sdot"></span>
+    <span style="font-size:11px;color:rgba(255,255,255,.4)">Système opérationnel</span>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <a href="/admin#users" class="back-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Retour
+      </a>
+      <div class="topbar-title">👤 {{u.prenom}} {{u.nom}}</div>
+    </div>
+    <div class="topbar-actions">
+      {% if u.est_bloque %}
+        <a href="/admin/unblock/{{u.id}}" class="btn-action btn-unblock-top">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Débloquer
+        </a>
+      {% else %}
+        <a href="/admin/block/{{u.id}}" class="btn-action btn-block-top"
+           onclick="return confirm('Bloquer {{u.prenom}} {{u.nom}} ?')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          Bloquer
+        </a>
+      {% endif %}
+      <button class="btn-action btn-delete-top" onclick="document.getElementById('del-modal').classList.add('open')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        Supprimer le compte
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Blocked alert -->
+    {% if u.est_bloque %}
+    <div class="alert-blocked">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+      <div><strong>Compte bloqué</strong> — Cet utilisateur ne peut plus accéder à l'application, créer des activités, envoyer des messages ni interagir avec d'autres membres.</div>
+    </div>
+    {% endif %}
+
+    <!-- Hero -->
+    <div class="hero-card">
+      <div class="hero-av" style="background:{{av_color}}">
+        {% if u.get_photo_url() %}<img src="{{u.get_photo_url()}}">
+        {% else %}{{u.prenom[0]}}{{u.nom[0]}}{% endif %}
+      </div>
+      <div class="hero-info">
+        <div class="hero-name">{{u.prenom}} {{u.nom}}</div>
+        <div class="hero-meta">{{u.email}} · {{u.ville}} · {{u.age}} ans</div>
+        <div class="hero-badges">
+          {% if u.est_bloque %}
+            <span class="hbadge blocked">🚫 Bloqué</span>
+          {% elif not u.est_valide %}
+            <span class="hbadge pending">⏳ En attente</span>
+          {% else %}
+            <span class="hbadge active">● Compte actif</span>
+          {% endif %}
+          <span class="hbadge rating">⭐ {{u.reputation}}/5</span>
+          {% if u.email_verifie %}<span class="hbadge active">✅ Email vérifié</span>{% endif %}
+        </div>
+      </div>
+      <div class="hero-date">Inscrit le<span>{{u.date_inscription}}</span></div>
+    </div>
+
+    <!-- KPI row -->
+    <div class="kpi-row">
+      <div class="kpi-mini">
+        <div class="kpi-mini-icon">🎯</div>
+        <div class="kpi-mini-num">{{u.activites_creees|length}}</div>
+        <div class="kpi-mini-lbl">Activités créées</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-mini-icon">👥</div>
+        <div class="kpi-mini-num">{{participations}}</div>
+        <div class="kpi-mini-lbl">Participations</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-mini-icon">⭐</div>
+        <div class="kpi-mini-num">{{avis|length}}</div>
+        <div class="kpi-mini-lbl">Avis reçus</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-mini-icon">📈</div>
+        <div class="kpi-mini-num">{{u.reputation}}</div>
+        <div class="kpi-mini-lbl">Note moyenne</div>
+      </div>
+    </div>
+
+    <!-- Detail grid -->
+    <div class="detail-grid">
+
+      <!-- Infos personnelles -->
+      <div class="card">
+        <div class="card-header">📋 Informations personnelles</div>
+        <div class="info-row"><span class="info-label">Prénom</span><span class="info-val">{{u.prenom}}</span></div>
+        <div class="info-row"><span class="info-label">Nom</span><span class="info-val">{{u.nom}}</span></div>
+        <div class="info-row"><span class="info-label">Email</span><span class="info-val">{{u.email}}</span></div>
+        <div class="info-row"><span class="info-label">Âge</span><span class="info-val">{{u.age}} ans</span></div>
+        <div class="info-row"><span class="info-label">Ville</span><span class="info-val">{{u.ville}}</span></div>
+        <div class="info-row"><span class="info-label">Inscription</span><span class="info-val">{{u.date_inscription}}</span></div>
+        <div class="info-row"><span class="info-label">Email vérifié</span><span class="info-val">{% if u.email_verifie %}✅ Oui{% else %}❌ Non{% endif %}</span></div>
+        {% if u.filiere %}
+        <div class="info-row"><span class="info-label">Filière</span><span class="info-val">{{u.filiere}}</span></div>
+        {% endif %}
+        {% if u.annee_etude %}
+        <div class="info-row"><span class="info-label">Année</span><span class="info-val">{{u.annee_etude}}</span></div>
+        {% endif %}
+        {% if u.bio %}
+        <div class="info-row"><span class="info-label">Bio</span><span class="info-val" style="font-style:italic">{{u.bio[:100]}}</span></div>
+        {% endif %}
+      </div>
+
+      <!-- Statut compte -->
+      <div class="card">
+        <div class="card-header">⚙️ Statut du compte</div>
+        <div class="info-row"><span class="info-label">Statut</span>
+          <span class="info-val">
+            {% if u.est_bloque %}<span style="color:var(--red);font-weight:600">🚫 Bloqué</span>
+            {% elif not u.est_valide %}<span style="color:var(--gold);font-weight:600">⏳ En attente</span>
+            {% else %}<span style="color:var(--green);font-weight:600">✅ Actif</span>{% endif %}
+          </span>
+        </div>
+        <div class="info-row"><span class="info-label">Profil privé</span><span class="info-val">{{u.profil_prive and '🔒 Oui' or '🔓 Non'}}</span></div>
+        <div class="info-row"><span class="info-label">Accept. messages</span><span class="info-val">{{u.accepte_messages and '✅ Oui' or '❌ Non'}}</span></div>
+        <div class="info-row"><span class="info-label">Notif. amis</span><span class="info-val">{{u.notif_ami and '✅' or '❌'}}</span></div>
+        <div class="info-row"><span class="info-label">Notif. activités</span><span class="info-val">{{u.notif_activite and '✅' or '❌'}}</span></div>
+        <div class="info-row"><span class="info-label">Notif. messages</span><span class="info-val">{{u.notif_message and '✅' or '❌'}}</span></div>
+        <div class="info-row"><span class="info-label">Réputation</span><span class="info-val">⭐ {{u.reputation}}/5</span></div>
+
+        <!-- Actions rapides -->
+        <div style="padding:14px 18px;display:flex;gap:8px;border-top:1px solid var(--border)">
+          {% if u.est_bloque %}
+            <a href="/admin/unblock/{{u.id}}"
+               style="flex:1;padding:9px;background:rgba(45,181,76,.08);color:var(--green);border:1px solid rgba(45,181,76,.25);border-radius:10px;font-size:13px;font-weight:600;text-align:center;text-decoration:none">
+              ✅ Débloquer
+            </a>
+          {% else %}
+            <a href="/admin/block/{{u.id}}"
+               onclick="return confirm('Bloquer {{u.prenom}} {{u.nom}} ?')"
+               style="flex:1;padding:9px;background:rgba(232,84,26,.08);color:var(--orange);border:1px solid rgba(232,84,26,.25);border-radius:10px;font-size:13px;font-weight:600;text-align:center;text-decoration:none">
+              🚫 Bloquer
+            </a>
+          {% endif %}
+          <button onclick="document.getElementById('del-modal').classList.add('open')"
+                  style="flex:1;padding:9px;background:rgba(232,69,69,.08);color:var(--red);border:1px solid rgba(232,69,69,.25);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">
+            🗑️ Supprimer
+          </button>
+        </div>
+      </div>
+
+      <!-- Activités créées -->
+      <div class="card">
+        <div class="card-header">🎯 Activités créées ({{u.activites_creees|length}})</div>
+        {% if u.activites_creees %}
+          {% for act in u.activites_creees[:8] %}
+          <div class="act-item">
+            <a href="/activity/{{act.id}}" target="_blank" style="font-weight:600;font-size:13px;color:var(--dark);text-decoration:none;flex:1">{{act.titre[:40]}}</a>
+            <span class="act-type">{{act.type_activite}}</span>
+            <span class="act-date">{{act.date_activite}}</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty">Aucune activité créée</div>
+        {% endif %}
+      </div>
+
+      <!-- Avis reçus -->
+      <div class="card">
+        <div class="card-header">⭐ Avis reçus ({{avis|length}})</div>
+        {% if avis %}
+          {% for av in avis[:5] %}
+          <div class="review-item">
+            <div class="review-stars">{% for i in range(av.note|int) %}⭐{% endfor %} {{av.note}}/5</div>
+            {% if av.commentaire %}
+            <div class="review-text">"{{av.commentaire[:100]}}"</div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty">Aucun avis reçu</div>
+        {% endif %}
+      </div>
+
+    </div><!-- end detail-grid -->
+  </div><!-- end content -->
+</div><!-- end main -->
+
+<!-- Modal suppression -->
+<div class="modal-ov" id="del-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    </div>
+    <div class="modal-title">Supprimer ce compte ?</div>
+    <div class="modal-sub">Vous allez supprimer le compte de <strong>{{u.prenom}} {{u.nom}}</strong>.</div>
+    <div class="modal-warn">⚠️ Action <strong>irréversible</strong> — toutes les activités, messages et données seront supprimés définitivement.</div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="document.getElementById('del-modal').classList.remove('open')">Annuler</button>
+      <a href="/admin/delete_user/{{u.id}}" class="btn-confirm-del">Supprimer</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

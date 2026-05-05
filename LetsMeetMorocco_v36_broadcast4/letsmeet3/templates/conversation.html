@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}Message — {{contact.prenom}} {{contact.nom}}{% endblock %}
+{% block content %}
+<div class="main" style="max-width:700px">
+
+  <!-- Header -->
+  <div style="background:var(--white);border-radius:16px;padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);border:1px solid var(--border)">
+    <a href="/messages" style="color:var(--gray);text-decoration:none;font-size:20px;line-height:1">←</a>
+    {% if contact.get_photo_url() %}
+      <img src="{{contact.get_photo_url()}}" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">
+    {% else %}
+      <div style="width:46px;height:46px;border-radius:50%;background:{{contact.get_avatar_color()}};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#fff">{{contact.prenom[0]}}{{contact.nom[0]}}</div>
+    {% endif %}
+    <div style="flex:1">
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">{{contact.prenom}} {{contact.nom}}</div>
+      <div style="font-size:12px;color:var(--gray)">📍 {{contact.ville}} · ⭐ {{contact.reputation}}/5</div>
+    </div>
+    <a href="/user/{{contact.id}}" class="btn btn-outline" style="padding:6px 14px;font-size:12px">Voir profil</a>
+    <a href="/bloquer_dm/{{contact.id}}" onclick="return confirm('Bloquer {{contact.prenom}} ?')"
+       style="padding:6px 12px;background:rgba(232,69,69,.08);color:var(--red);border:1px solid rgba(232,69,69,.2);
+              border-radius:10px;text-decoration:none;font-size:12px;font-weight:500">🚫</a>
+  </div>
+
+  <!-- Zone de chat -->
+  <div style="background:#ECE5DD;border-radius:16px;padding:16px;min-height:400px;max-height:55vh;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:6px" id="dm-box">
+
+    {% if not msgs %}
+    <div style="text-align:center;margin:auto;padding:32px;color:#667781;font-size:14px">
+      <div style="font-size:36px;margin-bottom:8px">👋</div>
+      Envoie le premier message à {{contact.prenom}} !
+    </div>
+    {% endif %}
+
+    {% set prev_date = "" %}
+    {% for msg in msgs %}
+      {% if msg.date != prev_date %}
+      <div style="text-align:center;margin:6px 0">
+        <span style="background:rgba(255,255,255,.75);color:#667781;font-size:11px;font-weight:500;padding:3px 12px;border-radius:8px">{{msg.date}}</span>
+      </div>
+      {% set prev_date = msg.date %}
+      {% endif %}
+
+      {% set is_me = msg.expediteur_id == user.id %}
+      <div style="display:flex;align-items:flex-end;gap:6px;{{'flex-direction:row-reverse;' if is_me}}">
+        {% if not is_me %}
+          {% if msg.expediteur.get_photo_url() %}
+            <img src="{{msg.expediteur.get_photo_url()}}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">
+          {% else %}
+            <div style="width:28px;height:28px;border-radius:50%;background:{{msg.expediteur.get_avatar_color()}};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">{{msg.expediteur.prenom[0]}}</div>
+          {% endif %}
+        {% endif %}
+        <div style="max-width:70%;display:flex;flex-direction:column;align-items:{{'flex-end' if is_me else 'flex-start'}}">
+          <div style="padding:9px 13px 7px;border-radius:{{'16px 0 16px 16px' if is_me else '0 16px 16px 16px'}};font-size:14px;line-height:1.5;box-shadow:0 1px 2px rgba(0,0,0,.1);{{'background:#D9FDD3;color:#0d1117;' if is_me else 'background:#fff;color:#0d1117;'}}">
+            {{msg.contenu}}
+          </div>
+          <div style="font-size:10px;color:#999;margin-top:3px;display:flex;align-items:center;gap:3px">
+            {{msg.heure}}
+            {% if is_me %}<span style="color:{{'#4FC3F7' if msg.est_lu else '#999'}}">✓✓</span>{% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Input — AJAX, pas de rechargement -->
+  <div style="display:flex;gap:8px;align-items:center;background:var(--white);border-radius:30px;padding:8px 8px 8px 16px;box-shadow:0 2px 10px rgba(0,0,0,.1)">
+    <input type="text" id="dm-input" placeholder="Écris un message…" autocomplete="off"
+           style="flex:1;border:none;outline:none;font-size:14px;font-family:'DM Sans',sans-serif;background:transparent;color:var(--dark)"
+           maxlength="1000">
+    <button id="dm-send-btn" onclick="sendDM()"
+            style="width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;
+                   background:linear-gradient(135deg,var(--green),var(--blue));color:#fff;
+                   display:flex;align-items:center;justify-content:center;font-size:18px;
+                   flex-shrink:0;transition:transform .2s"
+            onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">➤</button>
+  </div>
+
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const CONTACT_ID = {{contact.id}};
+const MY_ID = {{user.id}};
+const CSRF = "{{csrf_token}}";
+let lastMsgId = 0;
+
+// Build a message bubble
+function buildBubble(m) {
+  const isMe = m.est_moi;
+  const wrap = document.createElement('div');
+  wrap.dataset.msgId = m.id;
+  wrap.style.cssText = `display:flex;justify-content:${isMe?'flex-end':'flex-start'};margin-bottom:12px`;
+  const bubble = document.createElement('div');
+  bubble.style.cssText = `max-width:68%;padding:10px 14px;border-radius:${isMe?'18px 18px 4px 18px':'18px 18px 18px 4px'};
+    background:${isMe?'linear-gradient(135deg,var(--green),var(--blue))':'var(--white)'};
+    color:${isMe?'#fff':'var(--dark)'};font-size:14px;line-height:1.5;
+    box-shadow:0 1px 6px rgba(0,0,0,.08);word-break:break-word`;
+  bubble.textContent = m.contenu;
+  const meta = document.createElement('div');
+  meta.style.cssText = 'font-size:10px;color:#999;margin-top:3px;display:flex;align-items:center;gap:3px';
+  meta.innerHTML = m.heure + (isMe ? `<span style="color:${m.est_lu?'#4FC3F7':'#999'}">✓✓</span>` : '');
+  bubble.appendChild(meta);
+  wrap.appendChild(bubble);
+  return wrap;
+}
+
+// Poll messages every 2s
+function pollMessages() {
+  fetch(`/api/dm/${CONTACT_ID}`)
+    .then(r => r.json())
+    .then(data => {
+      const box = document.getElementById('dm-box');
+      if (!box || !data.messages) return;
+      const newMsgs = data.messages.filter(m => m.id > lastMsgId);
+      if (newMsgs.length === 0) return;
+      const wasAtBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+      newMsgs.forEach(m => {
+        box.appendChild(buildBubble(m));
+        lastMsgId = Math.max(lastMsgId, m.id);
+      });
+      if (wasAtBottom) box.scrollTop = box.scrollHeight;
+    }).catch(() => {});
+}
+
+// Send message via AJAX
+function sendDM() {
+  const inp = document.getElementById('dm-input');
+  const contenu = inp.value.trim();
+  if (!contenu) return;
+  inp.value = '';
+  inp.focus();
+
+  const fd = new FormData();
+  fd.append('message', contenu);
+  fd.append('csrf_token', CSRF);
+
+  fetch(`/api/dm/${CONTACT_ID}/send`, { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        const box = document.getElementById('dm-box');
+        box.appendChild(buildBubble(data.message));
+        lastMsgId = Math.max(lastMsgId, data.message.id);
+        box.scrollTop = box.scrollHeight;
+      }
+    }).catch(() => {});
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', function() {
+  const box = document.getElementById('dm-box');
+  if (box) {
+    box.scrollTop = box.scrollHeight;
+    // Set lastMsgId from existing messages
+    box.querySelectorAll('[data-msg-id]').forEach(el => {
+      lastMsgId = Math.max(lastMsgId, parseInt(el.dataset.msgId) || 0);
+    });
+  }
+  // Enter key sends
+  const inp = document.getElementById('dm-input');
+  if(inp) {
+    inp.focus();
+    inp.addEventListener('keydown', function(e) {
+      if(e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendDM();
+      }
+    });
+  }
+  // Polling toutes les 2 secondes
+  setInterval(pollMessages, 2000);
+});
+</script>
+{% endblock %}

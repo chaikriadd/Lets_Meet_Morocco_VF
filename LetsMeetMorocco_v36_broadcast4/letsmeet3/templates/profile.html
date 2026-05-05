@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% block title %}Mon Profil{% endblock %}
+{% set banner_imgs = ['https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&q=70','https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=70','https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=70'] %}
+{% block content %}
+<div class="main">
+
+  <div class="profile-card">
+    <!-- Bannière -->
+    <div class="profile-banner">
+      <div class="profile-banner-img" style="background-image:url('{{banner_imgs[user.id % 3]}}')"></div>
+      <div class="profile-banner-overlay"></div>
+      <div style="position:absolute;top:14px;right:14px;z-index:2;display:flex;gap:8px">
+        <a href="/edit_profile" style="background:rgba(255,255,255,.15);backdrop-filter:blur(10px);color:#fff;padding:7px 14px;border-radius:20px;text-decoration:none;font-size:12px;font-weight:600;border:1px solid rgba(255,255,255,.25)">✏️ Modifier</a>
+      </div>
+    </div>
+
+    <div class="profile-body">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar-img" style="background:{{user.get_avatar_color()}}">
+            {% if user.get_photo_url() %}
+              <img src="{{user.get_photo_url()}}">
+            {% else %}
+              {{user.prenom[0]}}{{user.nom[0]}}
+            {% endif %}
+          </div>
+          <a href="/edit_profile" class="profile-edit-btn">✏️</a>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+          <span class="rep-badge">⭐ {{user.reputation}}/5</span>
+          {% if user.profil_prive %}<span style="background:rgba(123,45,139,.1);color:#7B2D8B;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid rgba(123,45,139,.2)">🔒 Privé</span>{% endif %}
+        </div>
+      </div>
+
+      <div class="profile-name">{{user.prenom}} {{user.nom}}</div>
+      <div class="profile-sub">
+        <span>📍 {{user.ville}}</span>
+        <span>🎂 {{user.age}} ans</span>
+        <span>✉️ {{user.email}}</span>
+        <span>📅 Membre depuis {{user.date_inscription}}</span>
+      </div>
+      {% if user.bio %}<div class="profile-bio">"{{user.bio}}"</div>{% endif %}
+
+      <!-- Stats -->
+      <div class="profile-stats">
+        <div class="profile-stat"><div class="profile-stat-num">{{user.nb_activites_creees()}}</div><div class="profile-stat-lbl">Créées</div></div>
+        <div class="profile-stat"><div class="profile-stat-num">{{user.nb_participations()}}</div><div class="profile-stat-lbl">Participations</div></div>
+        <div class="profile-stat"><div class="profile-stat-num">{{mes_avis|length}}</div><div class="profile-stat-lbl">Avis reçus</div></div>
+        <div class="profile-stat"><div class="profile-stat-num" style="color:var(--gold)">{{user.reputation}}</div><div class="profile-stat-lbl">⭐ Note moy.</div></div>
+      </div>
+
+      <!-- Badges -->
+      {% if badges %}
+      <div class="badges-section">
+        <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">🏅 Tes badges</div>
+        <div class="badges-grid">
+          {% for b in badges %}
+          <div class="badge-item">
+            <span class="badge-icon">{{b.icon}}</span>
+            <div class="badge-info">
+              <div class="badge-name">{{b.nom}}</div>
+              <div class="badge-desc">{{b.desc}}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Badges -->
+      {% if badges %}
+      <div class="badges-section">
+        <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">🏅 Tes badges</div>
+        <div class="badges-grid">
+          {% for b in badges %}
+          <div class="badge-item">
+            <span class="badge-icon">{{b.icon}}</span>
+            <div class="badge-info">
+              <div class="badge-name">{{b.nom}}</div>
+              <div class="badge-desc">{{b.desc}}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <div style="padding-top:14px;padding-bottom:2px">
+        <div style="font-size:12px;color:var(--gray);background:#FAF9F7;border-radius:10px;padding:10px 14px">
+          💡 Crée des activités et participe pour débloquer tes premiers badges !
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Badges profil -->
+      {% if badges %}
+      <div style="padding:14px 0;border-top:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">🏅 Badges</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          {% for b in badges %}
+          <div class="badge-item">
+            <span style="font-size:18px">{{b.icon}}</span>
+            <div><div style="font-size:12px;font-weight:600;color:var(--dark)">{{b.nom}}</div><div style="font-size:10px;color:var(--gray)">{{b.desc}}</div></div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <div style="padding:10px 0 4px"><div style="font-size:12px;color:var(--gray);background:#FAF9F7;border-radius:10px;padding:10px 14px">💡 Crée des activités pour débloquer tes badges !</div></div>
+      {% endif %}
+
+      <!-- Centres d'intérêt -->
+      <div style="padding-top:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Centres d'intérêt</div>
+        <div>{% for c in user.get_centres() %}<span class="ctag">{{c}}</span>{% endfor %}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demandes d'amis -->
+  {% if demandes_recues %}
+  <div class="card" style="border:1px solid rgba(45,181,76,.2);margin-bottom:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <h2 style="margin:0">👥 Demandes d'ami</h2>
+      <span style="background:var(--green);color:#fff;border-radius:50%;width:22px;height:22px;
+                   display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">
+        {{demandes_recues|length}}
+      </span>
+    </div>
+    {% for d in demandes_recues %}
+    <div style="display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:8px;
+                background:#F9FAFB;border-radius:14px;border:1px solid var(--border)">
+      <!-- Avatar -->
+      {% if d.envoyeur.get_photo_url() %}
+        <img src="{{d.envoyeur.get_photo_url()}}"
+             style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">
+      {% else %}
+        <div style="width:50px;height:50px;border-radius:50%;background:{{d.envoyeur.get_avatar_color()}};
+                    display:flex;align-items:center;justify-content:center;color:#fff;
+                    font-family:'Syne',sans-serif;font-weight:700;font-size:18px;flex-shrink:0">
+          {{d.envoyeur.prenom[0]}}{{d.envoyeur.nom[0]}}
+        </div>
+      {% endif %}
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px">{{d.envoyeur.prenom}} {{d.envoyeur.nom}}</div>
+        <div style="font-size:12px;color:var(--gray)">📍 {{d.envoyeur.ville}} · {{d.date}}</div>
+        <div style="font-size:12px;color:var(--gray);margin-top:2px">
+          {{d.envoyeur.nb_activites_creees()}} activités · ⭐ {{d.envoyeur.reputation}}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+        <a href="/repondre_ami/{{d.id}}/oui"
+           class="btn btn-green" style="padding:7px 16px;font-size:13px;text-align:center">
+          ✅ Accepter
+        </a>
+        <a href="/repondre_ami/{{d.id}}/non"
+           class="btn btn-gray" style="padding:7px 16px;font-size:13px;text-align:center">
+          ✕ Refuser
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Activités créées -->
+  <div class="sec-head"><div class="sec-title">🎯 Mes activités</div><a href="/create_activity" class="btn btn-orange" style="padding:7px 16px;font-size:13px">+ Créer</a></div>
+  {% if mes_act %}
+  {% set IMG = {
+  'Football':                    'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80',
+  'Basketball':                  'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&q=80',
+  'Padel':                       'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&q=80',
+  'Tennis':                      'https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=600&q=80',
+  'Volleyball':                  'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=600&q=80',
+  'Course à pied':               'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80',
+  'Natation':                    'https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=600&q=80',
+  'Yoga':                        'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80',
+  'Salle de sport':              'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80',
+  'Vélo':                        'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&q=80',
+  'Marche':                      'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=600&q=80',
+  'Projet de fin d\'études':    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80',
+  'Café entre étudiants':        'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=600&q=80',
+  'Sortie restaurant':           'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80',
+  'Glace':                       'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&q=80',
+  'Snack':                       'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=600&q=80',
+  'Cinéma':                      'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=600&q=80',
+  'Jeux (PlayStation, jeux de société)': 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&q=80',
+  'Explorer Marrakech':          'https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=600&q=80',
+  'Visiter des lieux culturels': 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=600&q=80',
+  'Regarder le coucher de soleil':'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80',
+  'Shopping':                    'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80',
+  'Explorer la ville':           'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&q=80'
+} %}
+  {% set COL = {'Football':'#2DB54C','Course à pied':'#1565C0','Café entre étudiants':'#C67C3A','Yoga':'#7B2D8B','Natation':'#0077B6','Vélo':'#2DB54C','Basketball':'#E8541A','Sortie restaurant':'#C67C3A','Explorer la ville':'#006064','Regarder le coucher de soleil':'#E65100'} %}
+  {% set EMO = {'Football':'⚽','Course à pied':'🏃','Café entre étudiants':'☕','Yoga':'🧘','Natation':'🏊','Vélo':'🚴','Basketball':'🏀','Sortie restaurant':'🍽️','Explorer la ville':'🏙️','Regarder le coucher de soleil':'🌅'} %}
+  <div class="grid3" style="margin-bottom:28px">
+  {% for act in mes_act %}
+    {% set img = IMG.get(act.type_activite,'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80') %}
+    {% set col = COL.get(act.type_activite,'#E8541A') %}
+    {% set emo = EMO.get(act.type_activite,'🎯') %}
+    <a href="/activity/{{act.id}}" class="act-card">
+      <div class="act-card-img" style="background-image:url('{{img}}')"></div>
+      <div class="act-card-overlay"></div>
+      <div class="act-card-status {{'s-full' if act.est_complete() else 's-open'}}">● {{act.statut}}</div>
+      <div class="act-card-body">
+        <div class="act-card-type">{{emo}} {{act.type_activite}}</div>
+        <div class="act-card-title">{{act.titre}}</div>
+        <div class="act-card-meta"><span>📅 {{act.date_activite}}</span><span>👥 {{act.nb_participants()}}/{{act.nb_max}}</span></div>
+      </div>
+    </a>
+  {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:32px;color:var(--gray);background:var(--white);border-radius:16px;margin-bottom:20px">
+    <div style="font-size:32px;margin-bottom:8px">🎯</div>
+    <div>Pas encore d'activité. <a href="/create_activity" style="color:var(--orange)">Crée-en une !</a></div>
+  </div>
+  {% endif %}
+
+  <!-- ACTIVITÉS SAUVEGARDÉES -->
+  {% if acts_favoris %}
+  <div class="card" style="margin-top:20px">
+    <div class="sec-head" style="margin-bottom:14px">
+      <div class="sec-title">❤️ Activités sauvegardées</div>
+      <span style="font-size:12px;color:var(--gray)">{{acts_favoris|length}} sauvegardée(s)</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+    {% set IMGF = {"Padel":"https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&q=75","Football":"https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=400&q=75","Basketball":"https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&q=75","Yoga":"https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&q=75","Café entre étudiants":"https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=400&q=75","Regarder le coucher de soleil":"https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=400&q=75"} %}
+    {% for act in acts_favoris %}
+    {% set fi = IMGF.get(act.type_activite,"https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&q=75") %}
+    <a href="/activity/{{act.id}}" style="text-decoration:none;border-radius:12px;overflow:hidden;display:block;position:relative;height:150px">
+      <div style="position:absolute;inset:0;background-image:url('{{fi}}');background-size:cover;background-position:center"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.75) 0%,transparent 60%)"></div>
+      <div style="position:absolute;top:7px;right:9px;font-size:14px">❤️</div>
+      <div style="position:absolute;bottom:10px;left:12px;right:12px">
+        <div style="font-size:10px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.4px">{{act.type_activite}}</div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-top:2px">{{act.titre}}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px">📅 {{act.date_activite}} · 👥 {{act.nb_participants()}}/{{act.nb_max}}</div>
+      </div>
+    </a>
+    {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+
+  <!-- Avis reçus -->
+  {% if mes_avis %}
+  <div class="card">
+    <h2>⭐ Avis reçus ({{mes_avis|length}})</h2>
+    {% for a in mes_avis %}
+    <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="color:var(--gold)">{% for i in range(a.note|int) %}★{% endfor %}{% for i in range(5-a.note|int) %}☆{% endfor %}</span>
+        <span style="font-size:12px;font-weight:600;color:var(--orange)">{{a.note}}/5</span>
+        <span style="font-size:11px;color:var(--gray);margin-left:auto">{{a.date}}</span>
+      </div>
+      {% if a.commentaire %}<p style="font-size:13px;color:#555;font-style:italic">"{{a.commentaire}}"</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Zone danger -->
+  <div class="card" style="border:1px solid rgba(232,69,69,.2)">
+    <h2 style="color:var(--red)">⚠️ Zone de danger</h2>
+    <p style="font-size:13px;color:var(--gray);margin-bottom:14px">Cette action est définitive et irréversible. Toutes tes données seront supprimées.</p>
+    <button onclick="document.getElementById('del-modal-self').style.display='flex'"
+            class="btn btn-red" style="font-size:13px">🗑️ Supprimer mon compte</button>
+  </div>
+
+  <!-- Modal confirmation -->
+  <div id="del-modal-self" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
+    <div style="background:#fff;border-radius:18px;padding:32px;max-width:400px;width:90%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.2)">
+      <div style="font-size:40px;margin-bottom:12px">🗑️</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;color:#111">Supprimer ton compte ?</h3>
+      <p style="font-size:13px;color:#666;line-height:1.6;margin-bottom:16px">Cette action est <strong>irréversible</strong>. Toutes tes activités, messages et données seront supprimés définitivement.</p>
+      <form method="POST" action="/delete_account">
+        <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <button type="button" onclick="document.getElementById('del-modal-self').style.display='none'"
+                  style="padding:11px;border:1px solid #E5E7EB;border-radius:10px;background:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif">
+            Annuler
+          </button>
+          <button type="submit"
+                  style="padding:11px;border:none;border-radius:10px;background:#E84545;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">
+            Supprimer définitivement
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div style="display:none">{% endblock %}

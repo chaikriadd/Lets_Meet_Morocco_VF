@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="main">
+  <div class="card">
+    <h2>🔔 Notifications</h2>
+    {% if notifs %}
+      {% for n in notifs %}
+      <div class="notif-item {{'non-lue' if not n.est_lue}}">
+        <div class="notif-dot" style="background:{{'#2E7D32' if n.type_notif=='success' else '#1565C0' if n.type_notif=='ami' else '#757575'}}"></div>
+        <div>
+          <p style="font-size:14px">{{n.message}}</p>
+          <p style="font-size:12px;color:#757575;margin-top:3px">{{n.date}}</p>
+          {% if n.lien %}<a href="{{n.lien}}" style="font-size:12px;color:#2E7D32">Voir →</a>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color:#757575;text-align:center;padding:30px">Aucune notification pour le moment.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

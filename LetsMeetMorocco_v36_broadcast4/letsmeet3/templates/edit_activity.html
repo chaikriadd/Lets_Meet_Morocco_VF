@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Modifier l'activité{% endblock %}
+{% block content %}
+<div class="main">
+  <div class="card" style="max-width:600px;margin:0 auto">
+    <h2>✏️ Modifier l'activité</h2>
+    <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+      <div class="form-group"><label>Titre</label>
+        <input type="text" name="titre" value="{{act.titre}}" required></div>
+      <div class="form-row">
+        <div class="form-group"><label>Type</label>
+          <select name="type_activite">
+            {% for t in types %}<option {{'selected' if t==act.type_activite}}>{{t}}</option>{% endfor %}
+          </select></div>
+        <div class="form-group"><label>Nb max</label>
+          <input type="number" name="nb_max" value="{{act.nb_max}}" min="2"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Date</label>
+          <input type="date" name="date_activite" value="{{act.date_activite}}"></div>
+        <div class="form-group"><label>Heure</label>
+          <input type="time" name="heure" value="{{act.heure}}"></div>
+      </div>
+      <div class="form-group"><label>Lieu</label>
+        <input type="text" name="lieu" value="{{act.lieu}}"></div>
+      <div class="form-group"><label>Description</label>
+        <textarea name="description" rows="3">{{act.description}}</textarea></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-green" style="flex:1">Sauvegarder ✅</button>
+        <a href="/activity/{{act.id}}" class="btn btn-gray" style="flex:1;text-align:center">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

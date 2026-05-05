@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Messages — Let's Meet Morocco{% endblock %}
+{% block content %}
+<div class="main" style="max-width:700px">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <div class="sec-title">💬 Messages</div>
+    <a href="/activities" class="btn btn-orange" style="font-size:13px;padding:8px 16px">
+      🔍 Trouver des membres
+    </a>
+  </div>
+
+  {% if conversations %}
+  <div class="card" style="padding:0;overflow:hidden">
+    {% for conv in conversations %}
+    {% set c = conv.contact %}
+    {% set lm = conv.last_msg %}
+    <a href="/messages/{{c.id}}" style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);text-decoration:none;transition:background .15s;{{'background:rgba(232,84,26,.03);' if conv.unread > 0}}" onmouseover="this.style.background='#FAFAFA'" onmouseout="this.style.background='{{'rgba(232,84,26,.03)' if conv.unread else ''}}'">
+
+      <!-- Avatar -->
+      {% if c.get_photo_url() %}
+        <img src="{{c.get_photo_url()}}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--border)">
+      {% else %}
+        <div style="width:52px;height:52px;border-radius:50%;background:{{c.get_avatar_color()}};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff;flex-shrink:0">{{c.prenom[0]}}{{c.nom[0]}}</div>
+      {% endif %}
+
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:600;font-size:14px;color:var(--dark)">{{c.prenom}} {{c.nom}}</div>
+          {% if lm %}<div style="font-size:11px;color:var(--gray)">{{lm.date}} {{lm.heure}}</div>{% endif %}
+        </div>
+        <div style="font-size:13px;color:var(--gray);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+          {% if lm %}
+            {% if lm.expediteur_id == user.id %}
+              <span style="color:#aaa">Toi : </span>
+            {% endif %}
+            {{lm.contenu|truncate(60,true,'')}}
+          {% else %}
+            Démarre la conversation…
+          {% endif %}
+        </div>
+      </div>
+
+      {% if conv.unread > 0 %}
+      <div style="background:var(--orange);color:#fff;border-radius:50%;min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">{{conv.unread}}</div>
+      {% endif %}
+    </a>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="card" style="text-align:center;padding:60px">
+    <div style="font-size:48px;margin-bottom:14px">💬</div>
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px">Aucun message pour l'instant</div>
+    <p style="color:var(--gray);font-size:14px;margin-bottom:20px">Va voir le profil d'un membre pour lui envoyer un message !</p>
+    <a href="/activities" class="btn btn-orange">Explorer les activités</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

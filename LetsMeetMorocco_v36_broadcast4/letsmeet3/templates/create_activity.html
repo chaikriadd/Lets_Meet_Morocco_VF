@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+{% block title %}Créer une activité{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+{% block content %}
+<div class="main" style="max-width:700px">
+  <div class="sec-title" style="margin-bottom:24px">➕ Créer une activité</div>
+
+  <!-- Stepper -->
+  <div class="stepper">
+    <div class="step active" id="s1"><div class="step-num">1</div><div class="step-label">Type</div></div>
+    <div class="step-line" id="l1"></div>
+    <div class="step" id="s2"><div class="step-num">2</div><div class="step-label">Date & Lieu</div></div>
+    <div class="step-line" id="l2"></div>
+    <div class="step" id="s3"><div class="step-num">3</div><div class="step-label">Détails</div></div>
+  </div>
+
+  <form method="POST" id="create-form">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+    <input type="hidden" name="lat" id="field-lat">
+    <input type="hidden" name="lon" id="field-lon">
+
+    <!-- Étape 1 : Type -->
+    <div id="step1">
+      <div class="card">
+        <h2>🎯 Quel type d'activité ?</h2>
+        <input type="hidden" name="type_activite" id="type-val" required>
+        <div class="type-grid">
+          {% for t in types %}
+          {% set emojis = {
+  'Football':'⚽','Basketball':'🏀','Padel':'🎾','Tennis':'🎾','Volleyball':'🏐',
+  'Course à pied':'🏃','Natation':'🏊','Yoga':'🧘','Salle de sport':'💪','Vélo':'🚴','Marche':'🚶',
+  'Café entre étudiants':'☕','Sortie restaurant':'🍽️','Glace':'🍦','Snack':'🥪',
+  'Cinéma':'🎬','Jeux (PlayStation, jeux de société)':'🎮',
+  'Explorer Marrakech':'🏙️','Visiter des lieux culturels':'🏛️',
+  'Shopping':'🛍️','Regarder le coucher de soleil':'🌅'
+} %}
+          {% set emo = emojis.get(t,'🎯') %}
+          <div class="type-card" onclick="selectType('{{t}}',this)">
+            <span class="type-emoji">{{emo}}</span>
+            <div class="type-name">{{t}}</div>
+          </div>
+          {% endfor %}
+        </div>
+        <div style="text-align:right;margin-top:8px">
+          <button type="button" onclick="goStep(2)" class="btn btn-orange" id="btn-next1" disabled>Suivant →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Étape 2 : Date & Lieu avec carte -->
+    <div id="step2" style="display:none">
+      <div class="card">
+        <h2>📅 Quand et où ?</h2>
+        <div class="form-row">
+          <div class="form-group"><label>Date *</label><input type="date" name="date_activite" required></div>
+          <div class="form-group"><label>Heure *</label><input type="time" name="heure" required></div>
+        </div>
+        <div class="form-group"><label>Ville *</label>
+          <select name="ville_activite" id="ville-select" onchange="onVilleChange()">
+            {% for v in villes %}<option>{{v}}</option>{% endfor %}
+          </select>
+        </div>
+
+        <!-- Champ adresse avec recherche temps réel -->
+        <div class="form-group">
+          <label>Adresse précise *
+            <span style="font-size:11px;color:var(--gray);font-weight:400"> — ex: Terrain Guéliz, Route Casa à côté de Marjane</span>
+          </label>
+          <div style="position:relative">
+            <div id="addr-loading" style="font-size:12px;color:var(--green);margin-bottom:4px;min-height:16px"></div>
+        <input type="text" name="lieu" id="lieu-input"
+                   placeholder="Entre l'adresse du lieu..."
+                   autocomplete="off" required
+                   oninput="onLieuInput()"
+                   style="padding-right:100px">
+            <button type="button" onclick="searchLocation()"
+                    id="search-btn"
+                    style="position:absolute;right:6px;top:50%;transform:translateY(-50%);
+                           background:var(--orange);color:#fff;border:none;border-radius:8px;
+                           padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">
+              📍 Localiser
+            </button>
+          </div>
+          <div id="geo-status" style="font-size:12px;margin-top:5px"></div>
+        </div>
+
+        <!-- Carte preview -->
+        <div style="margin-bottom:14px">
+          <div style="font-size:12px;font-weight:600;color:var(--gray);margin-bottom:6px;
+               text-transform:uppercase;letter-spacing:.5px">
+            📍 Prévisualisation sur la carte
+          </div>
+          <div id="preview-map" style="height:240px;border-radius:12px;overflow:hidden;
+               border:1.5px solid var(--border);background:#f0f0f0">
+          </div>
+          <div style="font-size:11px;color:var(--gray);margin-top:5px;text-align:center">
+            Clique sur "📍 Localiser" pour placer l'activité · Tu peux aussi glisser le marqueur
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;margin-top:8px">
+          <button type="button" onclick="goStep(1)" class="btn btn-gray">← Retour</button>
+          <button type="button" onclick="goStep(3)" class="btn btn-orange" id="btn-next2">Suivant →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Étape 3 : Détails -->
+    <div id="step3" style="display:none">
+      <div class="card">
+        <h2>📝 Détails de l'activité</h2>
+        <div class="form-group"><label>Titre *</label>
+          <input type="text" name="titre" placeholder="Ex: Match de football amical à Guéliz" required></div>
+        <div class="form-group"><label>Description</label>
+          <textarea name="description" rows="3" placeholder="Décris ton activité, le niveau requis, ce qu'il faut apporter..."></textarea></div>
+        <div class="form-group"><label>Nombre maximum de participants</label>
+          <input type="number" name="nb_max" min="2" max="100" value="10" required></div>
+
+        <!-- Résumé -->
+        <div id="recap" style="background:#FAF9F7;border-radius:12px;padding:14px;margin-bottom:14px;display:none">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;
+               letter-spacing:.5px;margin-bottom:8px">Récapitulatif</div>
+          <div id="recap-content" style="font-size:13px;color:var(--dark);line-height:2"></div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;margin-top:8px">
+          <button type="button" onclick="goStep(2)" class="btn btn-gray">← Retour</button>
+          <button type="submit" class="btn btn-orange"
+                  style="font-family:'Syne',sans-serif;font-weight:700;padding:11px 28px">
+            🚀 Créer l'activité
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+let currentStep = 1;
+let previewMap = null;
+let marker = null;
+let geocodeTimeout = null;
+
+// ── Sélection type ──
+function selectType(val, el) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('type-val').value = val;
+  document.getElementById('btn-next1').disabled = false;
+}
+
+// ── Stepper ──
+function goStep(n) {
+  if (n > currentStep && n === 3) {
+    const d = document.querySelector('[name="date_activite"]');
+    const h = document.querySelector('[name="heure"]');
+    const l = document.getElementById('lieu-input');
+    if (!d.value || !h.value || !l.value) {
+      alert('Remplis tous les champs obligatoires.');
+      return;
+    }
+    updateRecap();
+  }
+  document.getElementById('step' + currentStep).style.display = 'none';
+  document.getElementById('step' + n).style.display = 'block';
+  ['s1','s2','s3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('active','done');
+    if (i + 1 < n) el.classList.add('done');
+    else if (i + 1 === n) el.classList.add('active');
+    if (i < 2) {
+      const line = document.getElementById('l' + (i+1));
+      line.classList.toggle('done', i + 1 < n);
+    }
+  });
+  currentStep = n;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  // Init map quand on arrive à l'étape 2
+  if (n === 2 && !previewMap) initMap();
+}
+
+// ── Carte de prévisualisation ──
+function initMap() {
+  const ville = document.getElementById('ville-select').value || 'Marrakech';
+  const VILLE_COORDS = {
+    'Marrakech': [31.6295,-7.9811], 'Casablanca': [33.5731,-7.5898],
+    'Rabat': [34.0209,-6.8416], 'Fès': [34.0181,-5.0078],
+    'Tanger': [35.7595,-5.8340], 'Agadir': [30.4202,-9.5981],
+    'Meknès': [33.8935,-5.5473], 'Oujda': [34.6805,-1.9076]
+  };
+  const coords = VILLE_COORDS[ville] || [31.6295,-7.9811];
+  previewMap = L.map('preview-map').setView(coords, 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(previewMap);
+
+  // Marqueur draggable
+  marker = L.marker(coords, {draggable: true}).addTo(previewMap);
+  marker.on('dragend', function(e) {
+    const pos = e.target.getLatLng();
+    document.getElementById('field-lat').value = pos.lat.toFixed(6);
+    document.getElementById('field-lon').value = pos.lng.toFixed(6);
+    // Reverse geocoding Nominatim
+    const addrInput = document.querySelector('#field-adresse,[name="lieu"],[name="adresse"]');
+    const loadEl = document.getElementById('addr-loading');
+    if (loadEl) loadEl.textContent = '📍 Localisation en cours...';
+    fetch('https://nominatim.openstreetmap.org/reverse?lat=' + pos.lat + '&lon=' + pos.lng + '&format=json&accept-language=fr')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if (!data || !data.address) return;
+        var addr = data.address;
+        var parts = [];
+        if (addr.road) parts.push(addr.road);
+        if (addr.neighbourhood || addr.suburb) parts.push(addr.neighbourhood || addr.suburb);
+        if (addr.city || addr.town || addr.village) parts.push(addr.city || addr.town || addr.village);
+        var formatted = parts.length > 0 ? parts.join(', ') : data.display_name.split(',').slice(0,3).join(',').trim();
+        if (addrInput) addrInput.value = formatted;
+        if (loadEl) { loadEl.textContent = '✅ ' + formatted; setTimeout(function(){ loadEl.textContent=''; }, 3000); }
+      })
+      .catch(function(){ if(loadEl) loadEl.textContent=''; });
+  });
+
+  // Clic sur la carte pour déplacer le marqueur
+  previewMap.on('click', function(e) {
+    marker.setLatLng(e.latlng);
+    document.getElementById('field-lat').value = e.latlng.lat.toFixed(6);
+    document.getElementById('field-lon').value = e.latlng.lng.toFixed(6);
+    document.getElementById('geo-status').innerHTML =
+      '<span style="color:var(--green)">📍 Position sélectionnée sur la carte ✅</span>';
+  });
+}
+
+function onVilleChange() {
+  if (previewMap) {
+    const VILLE_COORDS = {
+      'Marrakech': [31.6295,-7.9811], 'Casablanca': [33.5731,-7.5898],
+      'Rabat': [34.0209,-6.8416], 'Fès': [34.0181,-5.0078],
+      'Tanger': [35.7595,-5.8340], 'Agadir': [30.4202,-9.5981],
+      'Meknès': [33.8935,-5.5473], 'Oujda': [34.6805,-1.9076]
+    };
+    const ville = document.getElementById('ville-select').value;
+    const coords = VILLE_COORDS[ville] || [31.6295,-7.9811];
+    previewMap.setView(coords, 13);
+    marker.setLatLng(coords);
+  }
+}
+
+// ── Géocodage auto après frappe ──
+function onLieuInput() {
+  clearTimeout(geocodeTimeout);
+  const val = document.getElementById('lieu-input').value;
+  if (val.length < 5) return;
+  geocodeTimeout = setTimeout(() => searchLocation(true), 1200);
+}
+
+function searchLocation(auto = false) {
+  const lieu  = document.getElementById('lieu-input').value.trim();
+  const ville = document.getElementById('ville-select').value;
+  const status = document.getElementById('geo-status');
+  if (!lieu) { alert('Entre une adresse d\'abord.'); return; }
+
+  status.innerHTML = '<span style="color:var(--gray)">⏳ Recherche en cours...</span>';
+  const btn = document.getElementById('search-btn');
+  btn.textContent = '⏳';
+  btn.disabled = true;
+
+  fetch(`/api/geocode?q=${encodeURIComponent(lieu)}&ville=${encodeURIComponent(ville)}`)
+    .then(r => r.json())
+    .then(d => {
+      btn.textContent = '📍 Localiser';
+      btn.disabled = false;
+      if (d.ok) {
+        const latlng = L.latLng(d.lat, d.lon);
+        marker.setLatLng(latlng);
+        previewMap.setView(latlng, 16);
+        document.getElementById('field-lat').value = d.lat;
+        document.getElementById('field-lon').value = d.lon;
+        status.innerHTML = '<span style="color:var(--green)">✅ Localisation trouvée ! Glisse le marqueur pour ajuster.</span>';
+      } else {
+        status.innerHTML = '<span style="color:var(--orange)">⚠️ Adresse non trouvée. Clique sur la carte pour placer manuellement.</span>';
+      }
+    })
+    .catch(() => {
+      btn.textContent = '📍 Localiser';
+      btn.disabled = false;
+      status.innerHTML = '<span style="color:var(--red)">❌ Erreur réseau. Clique sur la carte pour placer manuellement.</span>';
+    });
+}
+
+// ── Récapitulatif ──
+function updateRecap() {
+  const type = document.getElementById('type-val').value;
+  const date = document.querySelector('[name="date_activite"]').value;
+  const heure = document.querySelector('[name="heure"]').value;
+  const lieu  = document.getElementById('lieu-input').value;
+  const ville = document.getElementById('ville-select').value;
+  const recap = document.getElementById('recap');
+  const content = document.getElementById('recap-content');
+  recap.style.display = 'block';
+  content.innerHTML = `
+    🎯 <b>${type}</b><br>
+    📅 ${date} à ${heure}<br>
+    📍 ${lieu}, ${ville}<br>
+    ${document.getElementById('field-lat').value ? '✅ Position sur la carte confirmée' : '⚠️ Position approximative (centre de ' + ville + ')'}
+  `;
+}
+</script>
+{% endblock %}

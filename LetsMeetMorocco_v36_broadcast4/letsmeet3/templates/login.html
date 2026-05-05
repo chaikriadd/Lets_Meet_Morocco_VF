@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Connexion — Let's Meet Morocco{% endblock %}
+{% block head %}
+<style>
+.login-wrap{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;background:#fff}
+.login-left{padding:48px;display:flex;flex-direction:column;justify-content:center;max-width:480px;margin:0 auto;width:100%}
+.login-right{background:linear-gradient(145deg,#0D2B12 0%,#1a5c2a 40%,#0a1f2e 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;position:relative;overflow:hidden}
+.login-right::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 30% 50%,rgba(45,181,76,.2),transparent),radial-gradient(ellipse 50% 50% at 80% 20%,rgba(181,135,58,.1),transparent)}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:40px}
+.login-logo img{height:44px;width:44px;object-fit:contain;border-radius:8px}
+.login-logo-txt{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#0D2B12;line-height:1.1}
+.login-logo-txt span{color:#B5873A;font-size:11px;letter-spacing:1.5px;font-weight:600}
+.login-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#0D2B12;margin-bottom:6px}
+.login-sub{font-size:14px;color:#7a8c82;margin-bottom:32px;line-height:1.6}
+.lf{margin-bottom:18px}
+.lf label{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
+.lf input{width:100%;padding:13px 15px;border:1.5px solid #E0E8E2;border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;background:#FAFCFA;color:#0D2B12}
+.lf input:focus{border-color:#2DB54C;background:#fff;box-shadow:0 0 0 3px rgba(45,181,76,.1)}
+.btn-login{width:100%;padding:14px;background:linear-gradient(135deg,#1a5c2a,#2DB54C);color:#fff;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(45,181,76,.3)}
+.btn-login:hover{opacity:.9;transform:translateY(-1px)}
+.login-visual-content{position:relative;z-index:1;text-align:center}
+.login-visual-logo{width:80px;height:80px;object-fit:contain;border-radius:18px;margin-bottom:24px}
+.login-visual-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:12px}
+.login-visual-title span{color:#F5A623}
+.login-visual-sub{font-size:14px;color:rgba(255,255,255,.65);line-height:1.7;max-width:260px;margin:0 auto 28px}
+.testimonial{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:20px;max-width:280px;text-align:left}
+.test-quote{font-size:13px;color:rgba(255,255,255,.85);line-height:1.7;font-style:italic;margin-bottom:12px}
+.test-author{display:flex;align-items:center;gap:10px}
+.test-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#fff}
+.test-name{font-size:12px;font-weight:600;color:#fff}
+.test-city{font-size:11px;color:rgba(255,255,255,.5)}
+@media(max-width:768px){
+  .login-wrap{grid-template-columns:1fr}
+  .login-right{display:none}
+  .login-left{padding:32px 24px}
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="login-wrap">
+  <div class="login-left">
+    <div class="login-logo">
+      <img src="{{ url_for('static',filename='img/logo.png') }}" alt="Let's Meet Morocco">
+      <div class="login-logo-txt">Let's Meet<br><span>MOROCCO</span></div>
+    </div>
+    <div class="login-title">Content de te revoir !</div>
+    <div class="login-sub">Connecte-toi pour rejoindre tes amis et découvrir de nouvelles activités.</div>
+
+    {% if error %}
+    <div style="background:#FEECEC;color:#B91C1C;border-left:4px solid #E84545;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:18px">
+      ⚠️ {{error}}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+      <div class="lf">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="ton@email.com" required autofocus autocomplete="email">
+      </div>
+      <div class="lf">
+        <label>
+          Mot de passe
+          <a href="/forgot-password" style="font-size:12px;color:#1a5c2a;font-weight:500;text-decoration:none">Oublié ?</a>
+        </label>
+        <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-login">Se connecter →</button>
+    </form>
+
+    <p style="text-align:center;margin-top:20px;font-size:13px;color:#888">
+      Pas encore de compte ?
+      <a href="/register" style="color:#1a5c2a;font-weight:600;text-decoration:none">Rejoindre la communauté →</a>
+    </p>
+    <p style="text-align:center;margin-top:8px;font-size:12px;color:#bbb">
+      <a href="/landing" style="color:#bbb;text-decoration:none">← Retour à l'accueil</a>
+    </p>
+  </div>
+
+  <div class="login-right">
+    <div class="login-visual-content">
+      <img src="{{ url_for('static',filename='img/logo.png') }}" class="login-visual-logo" alt="Logo">
+      <div class="login-visual-title">Rejoins la<br><span>communauté</span></div>
+      <div class="login-visual-sub">Des activités près de toi chaque jour. Sport, café, culture — trouve des gens qui partagent tes passions.</div>
+      <div class="testimonial">
+        <div class="test-quote">"J'ai rencontré des amis incroyables grâce à Let's Meet Morocco. Chaque weekend est une nouvelle aventure !"</div>
+        <div class="test-author">
+          <div class="test-av" style="background:#E8541A">SA</div>
+          <div>
+            <div class="test-name">Salma Benali</div>
+            <div class="test-city">Casablanca · Membre depuis 2026</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

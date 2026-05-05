@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Confidentialité — Let's Meet Morocco{% endblock %}
+{% block content %}
+<div class="main" style="max-width:780px">
+  <div class="card">
+    <h1 style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px">Politique de confidentialité</h1>
+    <p style="color:var(--gray);font-size:13px;margin-bottom:28px">Dernière mise à jour : Avril 2026</p>
+
+    {% for title, body in [
+      ("1. Données collectées", "Nous collectons : votre prénom, nom, email, date de naissance, ville, photo de profil, centres d'intérêt, et les activités que vous créez ou rejoignez. Nous ne collectons pas de numéro de téléphone ni de données bancaires."),
+      ("2. Utilisation des données", "Vos données sont utilisées pour : créer et gérer votre compte, afficher votre profil aux autres membres, vous recommander des activités, vous envoyer des notifications liées à l'app."),
+      ("3. Stockage et sécurité", "Vos données sont stockées sur des serveurs sécurisés. Les mots de passe sont hashés et ne sont jamais stockés en clair. Nous utilisons HTTPS pour toutes les communications."),
+      ("4. Partage des données", "Vos données ne sont jamais vendues à des tiers. Votre profil est visible par les autres membres de Let's Meet Morocco selon vos paramètres de confidentialité."),
+      ("5. Vos droits", "Vous pouvez à tout moment : modifier vos informations depuis 'Paramètres', rendre votre profil privé, supprimer votre compte depuis 'Paramètres → Danger Zone'. Pour toute demande : admin@letsmeet.ma"),
+      ("6. Cookies", "L'app utilise des cookies de session pour maintenir votre connexion. Ces cookies sont supprimés à la déconnexion. Nous n'utilisons pas de cookies publicitaires."),
+      ("7. Mineurs", "L'application est réservée aux personnes de 18 ans et plus. Tout compte d'une personne mineure sera supprimé dès détection."),
+      ("8. Contact", "Pour toute question relative à vos données personnelles, contactez-nous à : admin@letsmeet.ma")
+    ] %}
+    <h2 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin:22px 0 8px">{{title}}</h2>
+    <p style="font-size:14px;color:#555;line-height:1.8">{{body}}</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

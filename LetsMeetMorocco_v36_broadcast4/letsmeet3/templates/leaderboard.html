@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Classement — Let's Meet Morocco{% endblock %}
+{% block content %}
+<div class="main" style="max-width:760px">
+
+  <!-- Hero -->
+  <div style="background:linear-gradient(135deg,var(--nav-bg),#0a1f2e);border-radius:20px;padding:32px;margin-bottom:24px;text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(245,166,35,.15),transparent 65%)"></div>
+    <div style="position:relative;z-index:1">
+      <div style="font-size:48px;margin-bottom:8px">🏆</div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:6px">Classement de la communauté</h1>
+      <p style="color:rgba(255,255,255,.6);font-size:14px">Les membres les plus actifs de Let's Meet Morocco</p>
+      <div style="margin-top:14px;font-size:12px;color:rgba(255,255,255,.4)">
+        Score = activités créées × 3 + participations + note × 2
+      </div>
+    </div>
+  </div>
+
+  <!-- Top 3 podium -->
+  {% if ranked|length >= 3 %}
+  <div style="display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:12px;margin-bottom:24px;align-items:flex-end">
+
+    <!-- 2ème -->
+    <div style="background:var(--white);border-radius:16px;padding:20px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.07);border:1px solid var(--border)">
+      <div style="font-size:28px;margin-bottom:8px">🥈</div>
+      {% set u2 = ranked[1].user %}
+      {% if u2.get_photo_url() %}
+        <img src="{{u2.get_photo_url()}}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid #C0C0C0;margin-bottom:8px">
+      {% else %}
+        <div style="width:56px;height:56px;border-radius:50%;background:{{u2.get_avatar_color()}};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff;margin:0 auto 8px;border:3px solid #C0C0C0">{{u2.prenom[0]}}{{u2.nom[0]}}</div>
+      {% endif %}
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700">{{u2.prenom}}</div>
+      <div style="font-size:12px;color:var(--gray)">{{u2.ville}}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#888;margin-top:6px">{{ranked[1].score}} pts</div>
+      {% if ranked[1].streak > 0 %}<div style="font-size:12px;margin-top:4px">🔥 {{ranked[1].streak}} jours</div>{% endif %}
+    </div>
+
+    <!-- 1er -->
+    <div style="background:linear-gradient(135deg,rgba(245,166,35,.1),rgba(232,84,26,.07));border-radius:20px;padding:24px;text-align:center;box-shadow:0 4px 20px rgba(245,166,35,.2);border:1.5px solid rgba(245,166,35,.3)">
+      <div style="font-size:36px;margin-bottom:8px">🥇</div>
+      {% set u1 = ranked[0].user %}
+      {% if u1.get_photo_url() %}
+        <img src="{{u1.get_photo_url()}}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:4px solid var(--gold);margin-bottom:8px">
+      {% else %}
+        <div style="width:72px;height:72px;border-radius:50%;background:{{u1.get_avatar_color()}};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:#fff;margin:0 auto 8px;border:4px solid var(--gold)">{{u1.prenom[0]}}{{u1.nom[0]}}</div>
+      {% endif %}
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800">{{u1.prenom}} {{u1.nom}}</div>
+      <div style="font-size:12px;color:var(--gray)">{{u1.ville}}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--gold);margin-top:8px">{{ranked[0].score}} pts</div>
+      {% if ranked[0].streak > 0 %}<div style="font-size:13px;margin-top:4px">🔥 {{ranked[0].streak}} jours de streak</div>{% endif %}
+      <a href="/user/{{u1.id}}" class="btn btn-orange" style="margin-top:10px;font-size:12px;padding:6px 16px">Voir profil</a>
+    </div>
+
+    <!-- 3ème -->
+    <div style="background:var(--white);border-radius:16px;padding:20px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.07);border:1px solid var(--border)">
+      <div style="font-size:28px;margin-bottom:8px">🥉</div>
+      {% set u3 = ranked[2].user %}
+      {% if u3.get_photo_url() %}
+        <img src="{{u3.get_photo_url()}}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid #CD7F32;margin-bottom:8px">
+      {% else %}
+        <div style="width:56px;height:56px;border-radius:50%;background:{{u3.get_avatar_color()}};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff;margin:0 auto 8px;border:3px solid #CD7F32">{{u3.prenom[0]}}{{u3.nom[0]}}</div>
+      {% endif %}
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700">{{u3.prenom}}</div>
+      <div style="font-size:12px;color:var(--gray)">{{u3.ville}}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#CD7F32;margin-top:6px">{{ranked[2].score}} pts</div>
+    </div>
+
+  </div>
+  {% endif %}
+
+  <!-- Liste complète -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">Classement complet</div>
+    </div>
+    {% for entry in ranked %}
+    {% set u = entry.user %}
+    {% set is_me = u.id == current_user.id %}
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);{{'background:rgba(232,84,26,.04);' if is_me}}transition:background .2s" onmouseover="this.style.background='#FAFAFA'" onmouseout="this.style.background='{{'rgba(232,84,26,.04)' if is_me else ''}}'" >
+
+      <!-- Rang -->
+      <div style="width:32px;text-align:center;flex-shrink:0">
+        {% if loop.index == 1 %}<span style="font-size:20px">🥇</span>
+        {% elif loop.index == 2 %}<span style="font-size:20px">🥈</span>
+        {% elif loop.index == 3 %}<span style="font-size:20px">🥉</span>
+        {% else %}<span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--gray)">#{{loop.index}}</span>
+        {% endif %}
+      </div>
+
+      <!-- Avatar -->
+      {% if u.get_photo_url() %}
+        <a href="/user/{{u.id}}" style="flex-shrink:0"><img src="{{u.get_photo_url()}}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;transition:transform .2s" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''"></a>
+      {% else %}
+        <a href="/user/{{u.id}}" style="text-decoration:none"><div style="width:44px;height:44px;border-radius:50%;background:{{u.get_avatar_color()}};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:#fff;flex-shrink:0;transition:transform .2s" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''">{{u.prenom[0]}}{{u.nom[0]}}</div></a>
+      {% endif %}
+
+      <!-- Infos -->
+      <div style="flex:1;min-width:0">
+        <a href="/user/{{u.id}}" style="font-weight:600;font-size:14px;text-decoration:none;
+             {{'color:var(--orange);' if is_me else 'color:var(--dark);'}}
+             display:flex;align-items:center;gap:6px">
+          {{u.prenom}} {{u.nom}}
+          {% if is_me %}<span style="font-size:11px;background:rgba(232,84,26,.1);color:var(--orange);padding:2px 8px;border-radius:10px">Toi</span>{% endif %}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.4"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+        <div style="font-size:12px;color:var(--gray);display:flex;gap:10px;margin-top:2px">
+          <span>📍 {{u.ville}}</span>
+          <span>🎯 {{u.nb_activites_creees()}} créées</span>
+          <span>👥 {{u.nb_participations()}} participations</span>
+        </div>
+      </div>
+
+      <!-- Stats droite -->
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--dark)">{{entry.score}}</div>
+        <div style="font-size:11px;color:var(--gray)">points</div>
+        {% if entry.streak > 0 %}
+        <div style="font-size:12px;margin-top:2px;color:var(--orange)">🔥 {{entry.streak}}j</div>
+        {% endif %}
+      </div>
+
+    </div>
+    {% endfor %}
+    {% if not ranked %}
+    <div style="text-align:center;padding:40px;color:var(--gray)">
+      <div style="font-size:32px;margin-bottom:8px">🏆</div>
+      <div>Aucun membre pour l'instant. Sois le premier !</div>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

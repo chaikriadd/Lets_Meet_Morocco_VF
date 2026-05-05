@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+{% block title %}{{act.titre}}{% endblock %}
+{% set IMG = {
+  'Football':                    'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=900&q=85',
+  'Basketball':                  'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=900&q=85',
+  'Padel':                       'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=900&q=85',
+  'Tennis':                      'https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=900&q=85',
+  'Volleyball':                  'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=900&q=85',
+  'Course à pied':               'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=900&q=85',
+  'Natation':                    'https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=900&q=85',
+  'Yoga':                        'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=900&q=85',
+  'Salle de sport':              'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=900&q=85',
+  'Vélo':                        'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=900&q=85',
+  'Marche':                      'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=900&q=85',
+  'Projet de fin d\'études':    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=900&q=85',
+  'Café entre étudiants':        'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=900&q=85',
+  'Sortie restaurant':           'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=85',
+  'Glace':                       'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=900&q=85',
+  'Snack':                       'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=900&q=85',
+  'Cinéma':                      'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=900&q=85',
+  'Jeux (PlayStation, jeux de société)': 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=900&q=85',
+  'Explorer Marrakech':          'https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=900&q=85',
+  'Visiter des lieux culturels': 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=900&q=85',
+  'Regarder le coucher de soleil':'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=900&q=85',
+  'Shopping':                    'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=85',
+  'Explorer la ville':           'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=900&q=85'
+} %}
+{% block content %}
+<div class="main">
+  <a href="/activities" class="btn btn-gray" style="margin-bottom:16px">← Retour</a>
+
+  <!-- Hero image -->
+  {% set img = IMG.get(act.type_activite,'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=900&q=85') %}
+  <div class="detail-hero-act">
+    <img src="{{img}}" alt="{{act.titre}}">
+    <div class="detail-hero-act-overlay"></div>
+    <div style="position:absolute;top:18px;right:18px;z-index:2;display:flex;gap:8px">
+      <span style="background:rgba(0,0,0,.4);backdrop-filter:blur(10px);color:#fff;
+            padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700">
+        {{'🔴 Complet' if act.est_complete() else '🟢 Ouvert'}}
+      </span>
+    </div>
+    <div class="detail-hero-act-info">
+      <div class="detail-hero-act-title">{{act.titre}}</div>
+      <div class="detail-hero-act-meta">
+        <span>📅 {{act.date_activite}} à {{act.heure}}</span>
+        <span>📍 {{act.lieu}}</span>
+        <span>👥 {{act.nb_participants()}}/{{act.nb_max}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:20px">
+    <!-- LEFT -->
+    <div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">{{act.type_activite}}</div>
+            <p style="font-size:14px;color:#555;line-height:1.7">{{act.description or 'Aucune description.'}}</p>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:10px">
+            {% if act.createur.get_photo_url() %}
+              <img src="{{act.createur.get_photo_url()}}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">
+            {% else %}
+              <div style="width:44px;height:44px;border-radius:50%;background:{{act.createur.get_avatar_color()}};display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:16px;border:2px solid var(--border)">{{act.createur.prenom[0]}}{{act.createur.nom[0]}}</div>
+            {% endif %}
+            <div>
+              <div style="font-weight:600;font-size:14px">{{act.createur.prenom}} {{act.createur.nom}}</div>
+              <div style="font-size:12px;color:var(--gray)">Organisateur · ⭐ {{act.createur.reputation}}/5</div>
+            </div>
+            <a href="/user/{{act.createur_id}}" class="btn btn-outline" style="margin-left:auto;padding:6px 14px;font-size:12px">Voir profil</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Participants -->
+      <div class="card">
+        <h2>👥 Participants ({{act.nb_participants()}}/{{act.nb_max}})</h2>
+        <div style="height:6px;background:#eee;border-radius:6px;margin-bottom:16px;overflow:hidden">
+          <div style="height:6px;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:6px;width:{{act.pourcentage()}}%;transition:width .5s"></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px">
+        {% for p in act.participants_list %}
+          <a href="/user/{{p.id}}" style="display:flex;align-items:center;gap:8px;background:#FAF9F7;padding:8px 12px;border-radius:30px;text-decoration:none;color:var(--dark);border:1px solid var(--border);transition:all .2s" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+            {% if p.get_photo_url() %}
+              <img src="{{p.get_photo_url()}}" style="width:28px;height:28px;border-radius:50%;object-fit:cover">
+            {% else %}
+              <div style="width:28px;height:28px;border-radius:50%;background:{{p.get_avatar_color()}};display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">{{p.prenom[0]}}{{p.nom[0]}}</div>
+            {% endif %}
+            <span style="font-size:13px;font-weight:500">{{p.prenom}}</span>
+            <span style="color:var(--gold);font-size:11px">⭐{{p.reputation}}</span>
+          </a>
+        {% endfor %}
+        </div>
+      </div>
+
+      <!-- Chat WhatsApp style -->
+      {% if est_participant or est_createur %}
+      <div class="card" style="padding:20px">
+        <h2 style="margin-bottom:16px">💬 Chat de groupe</h2>
+        <div class="chat-box" id="chat-box">
+          {% if act.messages %}
+            <div class="chat-day-divider"><span>Aujourd'hui</span></div>
+            {% for msg in act.messages %}
+            <div class="chat-msg {{'moi' if msg.user_id == session.get('user_id')}}">
+              {% if msg.user_id != session.get('user_id') %}
+              <div class="chat-av" style="background:{{msg.auteur.get_avatar_color()}}">
+                {% if msg.auteur.get_photo_url() %}<img src="{{msg.auteur.get_photo_url()}}">{% else %}{{msg.auteur.prenom[0]}}{% endif %}
+              </div>
+              {% endif %}
+              <div style="display:flex;flex-direction:column;align-items:{{'flex-end' if msg.user_id == session.get('user_id') else 'flex-start'}}">
+                <div class="chat-bubble" id="bubble-{{msg.id}}">
+                  <div class="sender">{{msg.auteur.prenom}}</div>
+                  <div class="text">{{msg.contenu}}</div>
+                  <div class="time">{{msg.heure}}</div>
+                </div>
+                <!-- Réactions existantes -->
+                {% set reacts = {} %}
+                {% for r in msg.reactions %}{% if r.emoji in reacts %}{% else %}
+                <span style="display:none" id="count-{{msg.id}}-{{r.emoji|replace('❤️','heart')|replace('👍','thumb')}}">1</span>
+                {% endif %}{% endfor %}
+                <div class="react-display" id="reacts-{{msg.id}}" style="display:flex;gap:4px;margin-top:3px;flex-wrap:wrap">
+                  {% set seen = [] %}
+                  {% for r in msg.reactions %}
+                    {% if r.emoji not in seen %}
+                      {% set _ = seen.append(r.emoji) %}
+                      <span onclick="addReaction({{msg.id}},'{{r.emoji}}')" style="background:rgba(255,255,255,.8);border:1px solid var(--border);border-radius:20px;padding:2px 7px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:3px">
+                        {{r.emoji}} <span id="rc-{{msg.id}}-{{loop.index}}">{{msg.reactions|selectattr('emoji','eq',r.emoji)|list|length}}</span>
+                      </span>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <!-- Bouton ajouter réaction -->
+                <div class="react-picker" id="picker-{{msg.id}}" style="display:none;background:#fff;border:1px solid var(--border);border-radius:20px;padding:4px 8px;gap:4px;margin-top:3px;box-shadow:0 2px 12px rgba(0,0,0,.1)">
+                  {% for emo in ['👍','❤️','😂','😮','🎉','🔥'] %}
+                  <span onclick="addReaction({{msg.id}},'{{emo}}')" style="font-size:18px;cursor:pointer;padding:2px;border-radius:6px;transition:transform .15s;display:inline-block" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform='scale(1)'">{{emo}}</span>
+                  {% endfor %}
+                </div>
+                <span onclick="togglePicker({{msg.id}})" style="font-size:11px;color:var(--gray);cursor:pointer;margin-top:2px;opacity:.6" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">+ réagir</span>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div style="text-align:center;padding:30px;color:#aaa;font-size:14px">💬 Aucun message. Lance la conversation !</div>
+          {% endif %}
+        </div>
+        <form method="POST" style="margin-top:0">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+          <input type="hidden" name="action" value="message">
+          <div class="chat-input-wrap">
+            <input type="text" name="message" placeholder="Écris un message..." autocomplete="off" required>
+            <button class="chat-send-btn" type="submit">➤</button>
+          </div>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- RIGHT sidebar -->
+    <div>
+      <!-- Actions -->
+      <div class="card" style="position:sticky;top:80px">
+        {% if not est_createur %}
+          {% if not est_participant %}
+            <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+              <input type="hidden" name="action" value="rejoindre">
+              <button class="btn btn-orange" style="width:100%;font-size:15px;padding:13px;font-family:'Syne',sans-serif;font-weight:700;border-radius:12px" {{'disabled' if act.est_complete()}}>
+                {{'🚀 Rejoindre' if not act.est_complete() else '🔴 Activité complète'}}
+              </button>
+            </form>
+          {% else %}
+            <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+              <input type="hidden" name="action" value="quitter">
+              <button class="btn btn-gray" style="width:100%;font-size:14px;padding:11px;border-radius:12px">🚪 Quitter l'activité</button>
+            </form>
+          {% endif %}
+        {% else %}
+          <a href="/edit_activity/{{act.id}}" class="btn btn-orange" style="width:100%;text-align:center;display:block;padding:11px;font-size:14px;border-radius:12px;margin-bottom:8px">✏️ Modifier</a>
+          <a href="/delete_activity/{{act.id}}" class="btn btn-red" style="width:100%;text-align:center;display:block;padding:11px;font-size:14px;border-radius:12px" onclick="return confirm('Supprimer ?')">🗑️ Supprimer</a>
+        {% endif %}
+
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin-bottom:10px">Détails</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;gap:10px;font-size:13px"><span style="color:var(--orange)">📅</span><span>{{act.date_activite}} à {{act.heure}}</span></div>
+            <div style="display:flex;gap:10px;font-size:13px"><span style="color:var(--orange)">📍</span><span>{{act.lieu}}</span></div>
+            <div style="display:flex;gap:10px;font-size:13px"><span style="color:var(--orange)">👥</span><span>{{act.nb_participants()}} / {{act.nb_max}} participants</span></div>
+            <div style="display:flex;gap:10px;font-size:13px"><span style="color:var(--orange)">📋</span><span>Créé le {{act.date_creation}}</span></div>
+          </div>
+        </div>
+
+        <!-- INVITER UN AMI -->
+        {% if est_participant or est_createur %}
+        <button onclick="document.getElementById('invite-panel').style.display=document.getElementById('invite-panel').style.display==='none'?'block':'none'"
+                style="width:100%;margin-bottom:8px;padding:9px;border-radius:10px;border:1px solid var(--border);
+                       background:#F4F6F8;color:var(--dark);cursor:pointer;font-size:13px;font-weight:500">
+          👥 Inviter un ami
+        </button>
+        <div id="invite-panel" style="display:none;background:#FAF9F7;border-radius:10px;padding:12px;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:600;color:var(--gray);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Tes amis</div>
+          {% set amis_envoyes = [] %}
+          {% set amis_recus = [] %}
+          <div style="display:flex;flex-direction:column;gap:6px">
+          {% for ami_data in [] %}{# placeholder #}{% endfor %}
+          <a href="https://wa.me/?text=Je+t'invite+à+{{act.titre|urlencode}}+!+Rejoins-moi+ici+:+{{request.url|urlencode}}"
+             target="_blank"
+             style="display:flex;align-items:center;gap:8px;padding:8px;background:#25D366;color:#fff;
+                    border-radius:8px;text-decoration:none;font-size:12px;font-weight:600">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.953 9.953 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+            Partager sur WhatsApp
+          </a>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- PARTAGE WhatsApp -->
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <a href="https://wa.me/?text={{act.titre|urlencode}}+—+{{request.url|urlencode}}"
+             target="_blank"
+             style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+                    padding:9px;background:#25D366;color:#fff;border-radius:10px;
+                    text-decoration:none;font-size:12px;font-weight:600">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.953 9.953 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+            WhatsApp
+          </a>
+          <button onclick="copyLink()"
+                  style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+                         padding:9px;background:#F4F6F8;color:var(--dark);border:1px solid var(--border);
+                         border-radius:10px;cursor:pointer;font-size:12px;font-weight:600" id="copy-btn">
+            🔗 Copier le lien
+          </button>
+        </div>
+
+        <!-- CHECK-IN -->
+        {% if est_participant %}
+        <button onclick="doCheckin({{act.id}})" id="checkin-btn"
+                style="width:100%;margin-top:8px;padding:10px;border-radius:10px;border:none;
+                       cursor:pointer;font-size:13px;font-weight:600;
+                       background:rgba(45,181,76,.1);color:var(--green);
+                       border:1px solid rgba(45,181,76,.2);transition:all .2s"
+                id="checkin-btn">
+          📍 Je suis là !
+        </button>
+        {% endif %}
+
+        <!-- Signaler -->
+        <button onclick="document.getElementById('sig-form').style.display='block'" style="width:100%;margin-top:14px;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;font-size:12px;color:var(--gray);cursor:pointer">⚠️ Signaler cette activité</button>
+        <div id="sig-form" style="display:none;margin-top:10px">
+          <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+            <input type="hidden" name="action" value="signaler">
+            <div class="form-group"><textarea name="motif" rows="2" placeholder="Motif..." style="font-size:13px" required></textarea></div>
+            <button class="btn btn-red" style="width:100%;font-size:13px;padding:8px">Signaler</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Notation -->
+      {% if est_participant and not est_createur and not deja_note %}
+      <div class="card" style="margin-top:0">
+        <h2 style="font-size:15px">⭐ Noter le créateur</h2>
+        <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+          <input type="hidden" name="action" value="noter">
+          <div class="form-group" style="margin-bottom:10px">
+            <select name="note" style="font-size:14px">
+              <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+              <option value="4" selected>⭐⭐⭐⭐ Très bien</option>
+              <option value="3">⭐⭐⭐ Bien</option>
+              <option value="2">⭐⭐ Passable</option>
+              <option value="1">⭐ Mauvais</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:10px">
+            <input type="text" name="commentaire" placeholder="Ton avis (optionnel)">
+          </div>
+          <button class="btn btn-orange" style="width:100%;font-size:13px;padding:10px">Envoyer la note</button>
+        </form>
+      </div>
+      {% elif deja_note %}
+      <div class="card" style="margin-top:0;text-align:center;padding:16px">
+        <div style="font-size:20px;margin-bottom:4px">✅</div>
+        <div style="font-size:13px;color:var(--gray)">Tu as déjà noté cette activité</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+startChatRefresh({{act.id}}, {{session.get('user_id',0)}});
+
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '✅ Copié !';
+    btn.style.background = 'rgba(45,181,76,.1)';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => {
+      btn.textContent = '🔗 Copier le lien';
+      btn.style.background = '#F4F6F8';
+      btn.style.color = 'var(--dark)';
+    }, 2000);
+  });
+}
+
+function doCheckin(actId) {
+  const btn = document.getElementById('checkin-btn');
+  fetch('/api/checkin/' + actId, {method:'POST'})
+    .then(r => r.json())
+    .then(d => {
+      if(d.ok) {
+        if(d.checked) {
+          btn.style.background = 'var(--green)';
+          btn.style.color = '#fff';
+          btn.textContent = '✅ Je suis là ! (' + (d.present||1) + ')';
+          btn.style.borderColor = 'var(--green)';
+        } else {
+          btn.style.background = 'rgba(45,181,76,.1)';
+          btn.style.color = 'var(--green)';
+          btn.textContent = '📍 Je suis là !';
+          btn.style.borderColor = 'rgba(45,181,76,.2)';
+        }
+      }
+    });
+}
+
+function togglePicker(msgId) {
+  const p = document.getElementById('picker-'+msgId);
+  if(!p) return;
+  const isShown = p.style.display === 'flex';
+  document.querySelectorAll('.react-picker').forEach(x=>x.style.display='none');
+  p.style.display = isShown ? 'none' : 'flex';
+}
+
+function addReaction(msgId, emoji) {
+  // Close picker
+  const p = document.getElementById('picker-'+msgId);
+  if(p) p.style.display='none';
+
+  fetch('/api/reaction/'+msgId, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({emoji:emoji})
+  }).then(r=>r.json()).then(d=>{
+    if(!d.ok) return;
+    // Update reaction display
+    const el = document.getElementById('reacts-'+msgId);
+    if(!el) return;
+    let html = '';
+    for(const [e, count] of Object.entries(d.reactions)) {
+      html += `<span onclick="addReaction(${msgId},'${e}')" style="background:rgba(255,255,255,.8);border:1px solid var(--border);border-radius:20px;padding:2px 7px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;animation:fadeUp .2s ease">${e} ${count}</span>`;
+    }
+    el.innerHTML = html;
+    // Animate
+    el.style.animation='fadeUp .2s ease';
+  }).catch(e=>console.error(e));
+}
+
+// Favori button
+const actId = {{act.id}};
+const favBtn = document.createElement('button');
+favBtn.innerHTML = '🤍 Sauvegarder';
+favBtn.style.cssText = 'width:100%;margin-top:8px;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;font-size:13px;color:var(--gray);cursor:pointer;transition:all .2s;font-family:"DM Sans",sans-serif';
+favBtn.onmouseenter = ()=>favBtn.style.background='#FAF9F7';
+favBtn.onmouseleave = ()=>favBtn.style.background='transparent';
+favBtn.onclick = ()=>{
+  const csrf = document.querySelector('input[name="csrf_token"]');
+  const csrfVal = csrf ? csrf.value : '';
+  fetch('/api/favori/'+actId, {
+    method: 'POST',
+    headers: {'Content-Type':'application/x-www-form-urlencoded'},
+    body: 'csrf_token=' + encodeURIComponent(csrfVal)
+  }).then(r=>r.json()).then(d=>{
+    favBtn.innerHTML = d.saved ? '❤️ Sauvegardé !' : '🤍 Sauvegarder';
+    favBtn.style.color = d.saved ? 'var(--orange)' : 'var(--gray)';
+    if(d.saved){favBtn.style.transform='scale(1.04)';setTimeout(()=>favBtn.style.transform='',300);}
+  }).catch(()=>{ alert('Connexion requise pour sauvegarder'); });
+};
+// Check if already saved
+fetch('/api/favori/'+actId+'/check').then(r=>r.json()).then(d=>{
+  if(d.saved){
+    favBtn.innerHTML='❤️ Sauvegardé !';
+    favBtn.style.color='var(--orange)';
+  }
+}).catch(()=>{});
+
+// Add Sauvegarder button to the sticky card
+const stickyCard = document.querySelector('.sticky-card') || document.querySelector('.card[style*="sticky"]');
+if(stickyCard) stickyCard.appendChild(favBtn);
+</script>
+{% endblock %}

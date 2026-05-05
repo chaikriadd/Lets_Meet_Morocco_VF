@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% block title %}Profil de {{cible.prenom}} {{cible.nom}}{% endblock %}
+{% set IMG = {
+  'Football':                    'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80',
+  'Basketball':                  'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&q=80',
+  'Padel':                       'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&q=80',
+  'Tennis':                      'https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=600&q=80',
+  'Volleyball':                  'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=600&q=80',
+  'Course à pied':               'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80',
+  'Natation':                    'https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=600&q=80',
+  'Yoga':                        'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80',
+  'Salle de sport':              'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80',
+  'Vélo':                        'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&q=80',
+  'Marche':                      'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=600&q=80',
+  'Projet de fin d\'études':    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80',
+  'Café entre étudiants':        'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=600&q=80',
+  'Sortie restaurant':           'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80',
+  'Glace':                       'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&q=80',
+  'Snack':                       'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=600&q=80',
+  'Cinéma':                      'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=600&q=80',
+  'Jeux (PlayStation, jeux de société)': 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&q=80',
+  'Explorer Marrakech':          'https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=600&q=80',
+  'Visiter des lieux culturels': 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=600&q=80',
+  'Regarder le coucher de soleil':'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80',
+  'Shopping':                    'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80',
+  'Explorer la ville':           'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&q=80'
+} %}
+{% set COL = {'Football':'#2DB54C','Course à pied':'#1565C0','Café entre étudiants':'#C67C3A','Yoga':'#7B2D8B','Natation':'#0077B6','Vélo':'#2DB54C','Basketball':'#E8541A','Marche':'#2DB54C','Salle de sport':'#E8541A','Sortie restaurant':'#C67C3A','Cinéma':'#B71C1C','Shopping':'#AD1457','Explorer la ville':'#006064','Regarder le coucher de soleil':'#E65100','Glace':'#0077B6'} %}
+{% set EMO = {'Football':'⚽','Course à pied':'🏃','Café entre étudiants':'☕','Yoga':'🧘','Natation':'🏊','Vélo':'🚴','Basketball':'🏀','Marche':'🚶','Salle de sport':'💪','Sortie restaurant':'🍽️','Cinéma':'🎬','Shopping':'🛍️','Explorer la ville':'🏙️','Regarder le coucher de soleil':'🌅','Glace':'🍦','Jeux (PlayStation, jeux de société)':'🎮'} %}
+{% block content %}
+<div class="main" style="max-width:900px">
+  <a href="javascript:history.back()" class="btn btn-gray" style="margin-bottom:16px;font-size:13px">← Retour</a>
+
+  <!-- PROFIL CARD avec bannière -->
+  <div class="profile-card" style="margin-bottom:20px">
+    <div class="profile-banner">
+      <div class="profile-banner-img"
+           style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=60')"></div>
+      <div class="profile-banner-overlay"></div>
+    </div>
+    <div class="profile-body">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+
+        <!-- Avatar -->
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar-img" style="background:{{cible.get_avatar_color()}}">
+            {% if cible.get_photo_url() %}
+              <img src="{{cible.get_photo_url()}}">
+            {% else %}
+              {{cible.prenom[0]}}{{cible.nom[0]}}
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+          <!-- Message -->
+          <a href="/messages/{{cible.id}}" class="btn btn-blue"
+             style="display:flex;align-items:center;gap:6px;padding:9px 18px">
+            💬 Message
+          </a>
+          <!-- Demande d'ami -->
+          {% if not demande %}
+            <a href="/demande_ami/{{cible.id}}"
+               class="btn btn-green"
+               style="display:flex;align-items:center;gap:6px;padding:9px 18px">
+              👥 Ajouter en ami
+            </a>
+          {% elif demande.statut == 'en_attente' %}
+            <span class="btn" style="background:#F4F6F8;color:#666;border:1px solid var(--border);cursor:default;padding:9px 18px">
+              ⏳ Demande envoyée
+            </span>
+          {% elif demande.statut == 'accepte' %}
+            <span class="btn" style="background:rgba(45,181,76,.1);color:var(--green);border:1px solid rgba(45,181,76,.3);cursor:default;padding:9px 18px">
+              ✅ Amis
+            </span>
+            <a href="/messages/{{cible.id}}" class="btn btn-orange" style="padding:9px 18px">
+              💬 Écrire
+            </a>
+          {% endif %}
+          <!-- Actions secondaires -->
+          <button onclick="var m=document.getElementById('actions-menu');m.style.display=m.style.display==='block'?'none':'block';event.stopPropagation()"
+                  style="width:38px;height:38px;border-radius:10px;background:#F4F6F8;
+                         border:1px solid var(--border);cursor:pointer;font-size:18px;
+                         display:flex;align-items:center;justify-content:center">⋯</button>
+          <!-- Dropdown menu -->
+          <div id="actions-menu" style="display:none;position:absolute;
+               right:0;top:44px;background:white;border:1px solid var(--border);
+               border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);
+               padding:6px;min-width:170px;z-index:1000">
+            <a href="/bloquer/{{cible.id}}"
+               onclick="return confirm('Bloquer {{cible.prenom}} ?')"
+               style="display:flex;align-items:center;gap:8px;padding:8px 12px;
+                      text-decoration:none;color:#666;border-radius:8px;font-size:13px">
+              🚫 Bloquer
+            </a>
+            <div onclick="document.getElementById('sig-form').style.display='block';document.getElementById('actions-menu').classList.remove('open')"
+                 style="display:flex;align-items:center;gap:8px;padding:8px 12px;
+                        color:#E84545;border-radius:8px;font-size:13px;cursor:pointer">
+              ⚠️ Signaler
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Infos -->
+      <div class="profile-name">{{cible.prenom}} {{cible.nom}}</div>
+      <div class="profile-sub">
+        <span>📍 {{cible.ville}}</span>
+        <span>🎂 {{cible.age}} ans</span>
+        <span class="rep-badge">⭐ {{cible.reputation}}/5</span>
+      </div>
+      {% if cible.bio %}
+      <div class="profile-bio">"{{cible.bio}}"</div>
+      {% endif %}
+
+      <!-- Stats -->
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-num">{{cible.nb_activites_creees()}}</div>
+          <div class="profile-stat-lbl">Activités créées</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num">{{cible.nb_participations()}}</div>
+          <div class="profile-stat-lbl">Participations</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num">{{avis|length}}</div>
+          <div class="profile-stat-lbl">Avis reçus</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num" style="color:var(--gold)">{{cible.reputation}}</div>
+          <div class="profile-stat-lbl">⭐ Note</div>
+        </div>
+      </div>
+
+      <!-- Centres d'intérêt -->
+      {% if cible.get_centres() %}
+      <div style="padding-top:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Centres d'intérêt</div>
+        <div>{% for c in cible.get_centres() %}<span class="ctag">{{c}}</span>{% endfor %}</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Formulaire signalement -->
+  <div id="sig-form" style="display:none" class="card" style="border:1px solid rgba(232,69,69,.2)">
+    <h2 style="color:var(--red)">⚠️ Signaler ce profil</h2>
+    <form method="POST" action="/signaler_user/{{cible.id}}">
+      <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+      <div class="form-group">
+        <label>Motif du signalement</label>
+        <textarea name="motif" rows="3" placeholder="Décris le problème..." required></textarea>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-red">Envoyer le signalement</button>
+        <button type="button" onclick="document.getElementById('sig-form').style.display='none'" class="btn btn-gray">Annuler</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Activités créées -->
+  {% if mes_act %}
+  <div class="sec-head" style="margin-bottom:16px">
+    <div class="sec-title">🎯 Activités de {{cible.prenom}}</div>
+  </div>
+  <div class="grid3" style="margin-bottom:28px">
+  {% for act in mes_act %}
+    {% set img = IMG.get(act.type_activite,'') %}
+    {% set col = COL.get(act.type_activite,'#E8541A') %}
+    {% set emo = EMO.get(act.type_activite,'🎯') %}
+    <a href="/activity/{{act.id}}" class="act-card">
+      <!-- Fond coloré avec emoji — fonctionne SANS internet -->
+      <div class="act-card-img"
+           style="background:linear-gradient(135deg,{{col}}dd,{{col}}88){% if img %};background-image:url('{{img}}'){% endif %}">
+      </div>
+      <div class="act-card-overlay"></div>
+      <div class="act-card-status {{'s-full' if act.est_complete() else 's-open'}}">● {{act.statut}}</div>
+      <!-- Emoji centré si pas d'image -->
+      {% if not img %}
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);
+                  font-size:52px;z-index:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))">{{emo}}</div>
+      {% endif %}
+      <div class="act-card-body">
+        <div class="act-card-type">{{emo}} {{act.type_activite}}</div>
+        <div class="act-card-title">{{act.titre}}</div>
+        <div class="act-card-meta">
+          <span>📅 {{act.date_activite}}</span>
+          <span>📍 {{act.lieu|truncate(18,true,'')}}</span>
+        </div>
+        <div class="act-card-prog-wrap">
+          <div class="act-card-prog">
+            <div class="act-card-prog-bar"
+                 style="width:{{act.pourcentage()}}%;background:rgba(255,255,255,.8)"></div>
+          </div>
+          <div class="act-card-prog-txt">{{act.nb_participants()}}/{{act.nb_max}}</div>
+        </div>
+      </div>
+    </a>
+  {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Avis reçus -->
+  {% if avis %}
+  <div class="card">
+    <h2>⭐ Avis reçus ({{avis|length}})</h2>
+    {% for a in avis %}
+    <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+        <span style="color:var(--gold);font-size:15px">
+          {% for i in range(a.note|int) %}★{% endfor %}{% for i in range(5-a.note|int) %}☆{% endfor %}
+        </span>
+        <span style="font-size:12px;font-weight:700;color:var(--orange)">{{a.note}}/5</span>
+        <span style="font-size:11px;color:var(--gray);margin-left:auto">{{a.date}}</span>
+      </div>
+      {% if a.commentaire %}
+      <p style="font-size:13px;color:#555;font-style:italic">"{{a.commentaire}}"</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Si aucune activité -->
+  {% if not mes_act and not avis %}
+  <div class="card" style="text-align:center;padding:40px">
+    <div style="font-size:36px;margin-bottom:10px">👋</div>
+    <div style="font-size:16px;font-weight:600;margin-bottom:6px">{{cible.prenom}} est nouveau !</div>
+    <p style="color:var(--gray);font-size:13px">Il n'a pas encore créé d'activité. Envoie-lui un message !</p>
+    <a href="/messages/{{cible.id}}" class="btn btn-blue" style="margin-top:14px">💬 Envoyer un message</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+// Fermer le menu actions si on clique ailleurs
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('actions-menu');
+  if (menu && !e.target.closest('#actions-menu') && !e.target.closest('[onclick*="actions-menu"]') && !e.target.closest('[onclick*="actions-menu"]')) {
+    menu.style.display = 'none';
+    menu.style.display = 'none';
+  }
+});
+</script>
+{% endblock %}

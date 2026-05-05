@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block title %}Modifier mon profil{% endblock %}
+{% block content %}
+<div class="main" style="max-width:680px">
+  <div class="sec-title" style="margin-bottom:20px">⚙️ Paramètres du compte</div>
+
+  {% if error %}<div class="alert alert-error">{{error}}</div>{% endif %}
+
+  <!-- Tabs -->
+  <div style="display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:20px">
+    {% for tab_id, tab_label in [('profil','Mon profil'),('email','Email'),('mdp','Mot de passe'),('notifs','Notifications')] %}
+    <button onclick="showTab('{{tab_id}}')"
+            id="tab-{{tab_id}}"
+            style="padding:10px 18px;font-size:13px;font-weight:500;border:none;background:transparent;
+                   cursor:pointer;border-bottom:2px solid {{'var(--orange)' if loop.first else 'transparent'}};
+                   color:{{'var(--orange)' if loop.first else 'var(--gray)'}};
+                   margin-bottom:-1px;font-family:'DM Sans',sans-serif;transition:all .2s">
+      {{tab_label}}
+    </button>
+    {% endfor %}
+  </div>
+
+  <!-- PROFIL -->
+  <div id="panel-profil">
+    <form method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+      <input type="hidden" name="action" value="profil">
+      <div class="card">
+        <!-- Photo de profil -->
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+          <div onclick="document.getElementById('photo-inp').click()"
+               style="width:72px;height:72px;border-radius:50%;background:{{user.get_avatar_color()}};
+                      display:flex;align-items:center;justify-content:center;cursor:pointer;
+                      font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:#fff;
+                      border:3px solid var(--border);overflow:hidden;flex-shrink:0" id="preview-av">
+            {% if user.get_photo_url() %}<img src="{{user.get_photo_url()}}" style="width:100%;height:100%;object-fit:cover" id="preview-img">
+            {% else %}{{user.prenom[0]}}{{user.nom[0]}}{% endif %}
+          </div>
+          <div>
+            <div style="font-weight:600;font-size:14px;margin-bottom:4px">{{user.prenom}} {{user.nom}}</div>
+            <button type="button" onclick="document.getElementById('photo-inp').click()"
+                    class="btn btn-outline" style="padding:6px 14px;font-size:12px">📷 Changer la photo</button>
+            <input type="file" id="photo-inp" name="photo" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Prénom</label><input type="text" value="{{user.prenom}}" disabled style="opacity:.6"></div>
+          <div class="form-group"><label>Nom</label><input type="text" value="{{user.nom}}" disabled style="opacity:.6"></div>
+        </div>
+        <div class="form-group"><label>Ville</label>
+          <select name="ville">{% for v in villes %}<option {{'selected' if v==user.ville}}>{{v}}</option>{% endfor %}</select>
+        </div>
+        <div class="form-group"><label>Bio <span style="font-size:11px;color:#999">(300 caractères max)</span></label>
+          <textarea name="bio" rows="3" maxlength="300" id="bio-inp" oninput="document.getElementById('bio-count').textContent=this.value.length">{{user.bio or ''}}</textarea>
+          <div style="font-size:11px;color:var(--gray);text-align:right;margin-top:3px"><span id="bio-count">{{(user.bio or '')|length}}</span>/300</div>
+        </div>
+        <!-- Paramètres de confidentialité -->
+        <div style="background:#F9FAFB;border-radius:14px;padding:4px 0;margin-bottom:8px;border:1px solid var(--border)">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--dark)">🔒 Profil privé</div>
+              <div style="font-size:12px;color:var(--gray);margin-top:2px">Seuls tes amis voient tes détails</div>
+            </div>
+            <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer;flex-shrink:0">
+              <input type="checkbox" name="profil_prive" id="chk_prive"
+                     {% if user.profil_prive %}checked{% endif %}>
+              <span id="track_prive" style="position:absolute;inset:0;border-radius:13px;transition:background .3s;
+                    background:{% if user.profil_prive %}var(--green){% else %}#ccc{% endif %}"></span>
+              <span id="knob_prive" style="position:absolute;top:3px;left:{% if user.profil_prive %}25px{% else %}3px{% endif %};
+                    width:20px;height:20px;border-radius:50%;background:#fff;
+                    box-shadow:0 1px 4px rgba(0,0,0,.2);transition:left .3s"></span>
+            </label>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--dark)">💬 Accepter les messages privés</div>
+              <div style="font-size:12px;color:var(--gray);margin-top:2px">Permettre aux membres de t'envoyer des DMs</div>
+            </div>
+            <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer;flex-shrink:0">
+              <input type="checkbox" name="accepte_messages" id="chk_msg"
+                     {% if user.accepte_messages %}checked{% endif %}>
+              <span id="track_msg" style="position:absolute;inset:0;border-radius:13px;transition:background .3s;
+                    background:{% if user.accepte_messages %}var(--green){% else %}#ccc{% endif %}"></span>
+              <span id="knob_msg" style="position:absolute;top:3px;left:{% if user.accepte_messages %}25px{% else %}3px{% endif %};
+                    width:20px;height:20px;border-radius:50%;background:#fff;
+                    box-shadow:0 1px 4px rgba(0,0,0,.2);transition:left .3s"></span>
+            </label>
+          </div>
+        </div>
+        <!-- Centres d'intérêt -->
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px">Centres d'intérêt</div>
+        {% set mes_centres = user.get_centres() %}
+        {% for cat, items in activites_liste.items() %}
+        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;margin-top:10px">{{cat}}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px">
+          {% for item in items %}
+          <label class="checkbox-item"
+               style="display:flex;align-items:center;gap:8px;padding:9px 14px;
+                      border:1.5px solid {% if item in mes_centres %}var(--green){% else %}var(--border){% endif %};
+                      border-radius:10px;cursor:pointer;transition:all .2s;
+                      background:{% if item in mes_centres %}rgba(45,181,76,.08){% else %}var(--white){% endif %};
+                      user-select:none">
+            <input type="checkbox" name="centres" value="{{item}}"
+                   {% if item in mes_centres %}checked{% endif %}>
+            <span style="font-size:13px;font-weight:500;color:var(--dark)">{{item}}</span>
+          </label>
+          {% endfor %}
+        </div>
+        {% endfor %}
+        <button class="btn btn-orange" style="margin-top:16px;font-family:'Syne',sans-serif;font-size:14px;padding:11px 28px">Sauvegarder →</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- EMAIL -->
+  <div id="panel-email" style="display:none">
+    <div class="card">
+      <h2 style="margin-bottom:4px">✉️ Modifier mon email</h2>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:20px">Email actuel : <strong>{{user.email}}</strong></p>
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+        <input type="hidden" name="action" value="email">
+        <div class="form-group"><label>Nouvel email</label>
+          <input type="email" name="nouvel_email" placeholder="nouveau@email.com" required></div>
+        <div class="form-group"><label>Confirme ton mot de passe</label>
+          <input type="password" name="mdp_confirm" placeholder="••••••••" required></div>
+        <button class="btn btn-orange" style="font-family:'Syne',sans-serif;font-size:14px;padding:11px 28px">Changer l'email →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MOT DE PASSE -->
+  <div id="panel-mdp" style="display:none">
+    <div class="card">
+      <h2 style="margin-bottom:16px">🔑 Changer mon mot de passe</h2>
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+        <input type="hidden" name="action" value="mdp">
+        <div class="form-group"><label>Mot de passe actuel</label>
+          <input type="password" name="ancien_mdp" placeholder="••••••••" required></div>
+        <div class="form-group"><label>Nouveau mot de passe <span style="font-size:11px;color:#999">(8 caractères min + chiffre)</span></label>
+          <input type="password" name="nouveau_mdp" placeholder="••••••••" minlength="8" required oninput="checkPwdStrength(this)">
+          <div id="pwd-strength" style="font-size:12px;margin-top:5px"></div>
+        </div>
+        <div class="form-group"><label>Confirmer le nouveau mot de passe</label>
+          <input type="password" name="confirm_mdp" placeholder="••••••••" required></div>
+        <button class="btn btn-orange" style="font-family:'Syne',sans-serif;font-size:14px;padding:11px 28px">Changer le mot de passe →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div id="panel-notifs" style="display:none">
+    <div class="card">
+      <h2 style="margin-bottom:4px">🔔 Paramètres de notifications</h2>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:20px">Choisis quelles notifications tu veux recevoir.</p>
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+        <input type="hidden" name="action" value="notifs">
+        {% set notif_fields = [
+          ('notif_ami',      '👥 Demandes d\'ami',   'Quand quelqu\'un t\'envoie une demande d\'ami'),
+          ('notif_activite', '🎯 Activités',           'Nouveaux participants, activités recommandées'),
+          ('notif_message',  '💬 Messages privés',     'Quand tu reçois un nouveau message'),
+          ('notif_system',   '⚙️ Système',             'Mises à jour importantes du compte')
+        ] %}
+        {% for field, label, desc in notif_fields %}
+        {% set is_on = user.notif_ami if field == 'notif_ami' else
+                       user.notif_activite if field == 'notif_activite' else
+                       user.notif_message if field == 'notif_message' else
+                       user.notif_system %}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-size:14px;font-weight:500;color:var(--dark)">{{label}}</div>
+            <div style="font-size:12px;color:var(--gray);margin-top:2px">{{desc}}</div>
+          </div>
+          <label class="toggle-switch" style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer;flex-shrink:0">
+            <input type="checkbox" name="{{field}}" {% if is_on %}checked{% endif %}
+                   onchange="this.parentElement.querySelector('span').style.background = this.checked ? 'var(--green)' : '#ccc'">
+            <span style="position:absolute;inset:0;border-radius:13px;transition:background .3s;
+                         background:{% if is_on %}var(--green){% else %}#ccc{% endif %}"></span>
+            <span style="position:absolute;top:3px;left:{% if is_on %}25px{% else %}3px{% endif %};
+                         width:20px;height:20px;border-radius:50%;background:#fff;
+                         box-shadow:0 1px 4px rgba(0,0,0,.2);transition:left .3s"
+                  id="knob-{{field}}"></span>
+          </label>
+        </div>
+        {% endfor %}
+        <button class="btn btn-orange" style="margin-top:16px;font-family:'Syne',sans-serif;font-size:14px;padding:11px 28px">Sauvegarder →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DANGER ZONE -->
+  <div class="card" style="border:1px solid rgba(232,69,69,.2);margin-top:20px">
+    <h2 style="color:var(--red);margin-bottom:8px">⚠️ Supprimer mon compte</h2>
+    <p style="font-size:13px;color:var(--gray);margin-bottom:12px">Suppression définitive et irréversible de toutes tes données.</p>
+    <button onclick="document.getElementById('del-form').style.display='block'" class="btn btn-red" style="font-size:13px">Supprimer mon compte</button>
+    <form id="del-form" method="POST" action="/delete_account" style="display:none;margin-top:14px">
+      <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+      <div class="form-group"><label>Tape <strong>SUPPRIMER</strong> pour confirmer</label>
+        <input type="text" name="confirm" placeholder="SUPPRIMER" required></div>
+      <button class="btn btn-red">Confirmer la suppression</button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+// Fix toggle knob animation
+document.querySelectorAll('.toggle-switch input').forEach(inp => {
+  inp.addEventListener('change', function() {
+    const knob = document.getElementById('knob-' + this.name);
+    if (knob) knob.style.left = this.checked ? '25px' : '3px';
+  });
+});
+
+// Apply visual state to already-checked checkboxes on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Privacy toggles
+  ['prive','msg'].forEach(id => {
+    const chk = document.getElementById('chk_' + id);
+    const track = document.getElementById('track_' + id);
+    const knob = document.getElementById('knob_' + id);
+    if (!chk) return;
+    chk.addEventListener('change', function() {
+      track.style.background = this.checked ? 'var(--green)' : '#ccc';
+      knob.style.left = this.checked ? '25px' : '3px';
+    });
+  });
+
+  // Centres d'intérêt — apply green border to pre-checked items
+  document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(function(inp) {
+    const label = inp.closest('label');
+    if (inp.checked && label) {
+      label.style.background = 'rgba(45,181,76,.08)';
+      label.style.borderColor = 'var(--green)';
+    }
+    inp.addEventListener('change', function() {
+      if (label) {
+        label.style.background = this.checked ? 'rgba(45,181,76,.08)' : 'var(--white)';
+        label.style.borderColor = this.checked ? 'var(--green)' : 'var(--border)';
+      }
+    });
+  });
+
+  // Notification toggles — animate knob on load
+  document.querySelectorAll('.toggle-switch input[type="checkbox"]').forEach(function(inp) {
+    const knob = inp.parentElement.querySelectorAll('span')[1];
+    const track = inp.parentElement.querySelectorAll('span')[0];
+    function updateToggle() {
+      if (knob) knob.style.left = inp.checked ? '25px' : '3px';
+      if (track) track.style.background = inp.checked ? 'var(--green)' : '#ccc';
+    }
+    updateToggle();
+    inp.addEventListener('change', updateToggle);
+  });
+});
+
+function showTab(id) {
+  ['profil','email','mdp','notifs'].forEach(t => {
+    document.getElementById('panel-'+t).style.display = t===id ? 'block' : 'none';
+    const btn = document.getElementById('tab-'+t);
+    btn.style.borderBottomColor = t===id ? 'var(--orange)' : 'transparent';
+    btn.style.color = t===id ? 'var(--orange)' : 'var(--gray)';
+  });
+}
+function previewPhoto(inp) {
+  if(inp.files && inp.files[0]) {
+    const av = document.getElementById('preview-av');
+    const reader = new FileReader();
+    reader.onload = e => {
+      av.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
+    };
+    reader.readAsDataURL(inp.files[0]);
+  }
+}
+function checkPwdStrength(inp) {
+  const v = inp.value;
+  const el = document.getElementById('pwd-strength');
+  let score = 0;
+  if(v.length >= 8) score++;
+  if(/\d/.test(v)) score++;
+  if(/[A-Z]/.test(v)) score++;
+  if(/[^a-zA-Z0-9]/.test(v)) score++;
+  const msgs = ['','❌ Trop court','⚠️ Faible','🟡 Correct','✅ Fort'];
+  const colors = ['','#E84545','#F5A623','#F5A623','#2DB54C'];
+  el.textContent = msgs[score] || '✅ Fort';
+  el.style.color = colors[score] || '#2DB54C';
+}
+// Check URL hash for tab
+const hash = window.location.hash.slice(1);
+if(['email','mdp','notifs'].includes(hash)) showTab(hash);
+</script>
+{% endblock %}

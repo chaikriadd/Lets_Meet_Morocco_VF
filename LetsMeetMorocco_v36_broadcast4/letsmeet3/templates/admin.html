@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Admin — Let's Meet Morocco</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --nav:#0D2B12; --green:#2DB54C; --orange:#E8541A; --red:#E84545;
+  --blue:#00B4D8; --gold:#F5A623; --gray:#6B7280; --light:#F9FAFB;
+  --border:#E5E7EB; --white:#fff; --dark:#111827;
+  --sidebar-w:240px;
+}
+body{font-family:'DM Sans',sans-serif;background:#F3F4F6;color:var(--dark);min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);
+  background:var(--nav);overflow-y:auto;z-index:100;
+  display:flex;flex-direction:column;
+}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-logo img{height:36px;width:36px;border-radius:8px;object-fit:contain}
+.sidebar-logo-txt{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-left:8px}
+.sidebar-logo-txt span{color:var(--gold);font-size:10px;letter-spacing:1px;display:block;font-weight:600}
+.sidebar-section-label{
+  font-size:10px;font-weight:700;color:rgba(255,255,255,.3);
+  text-transform:uppercase;letter-spacing:1px;
+  padding:14px 20px 6px;
+}
+.sidebar-link{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 20px;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,.6);text-decoration:none;
+  border-radius:0;transition:all .15s;position:relative;
+  border-left:3px solid transparent;
+}
+.sidebar-link:hover{background:rgba(255,255,255,.06);color:#fff}
+.sidebar-link.active{background:rgba(45,181,76,.15);color:#fff;border-left-color:var(--green)}
+.sidebar-link svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.sidebar-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:100px;min-width:18px;text-align:center}
+.sidebar-status{padding:16px 20px;margin-top:auto;border-top:1px solid rgba(255,255,255,.08)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#2DB54C;display:inline-block;margin-right:6px;box-shadow:0 0 6px #2DB54C}
+.status-txt{font-size:12px;color:rgba(255,255,255,.5)}
+
+/* ── MAIN ── */
+.main-content{margin-left:var(--sidebar-w);min-height:100vh}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:0 28px;height:60px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:50;
+}
+.topbar-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--dark)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.search-wrap{position:relative}
+.search-wrap input{
+  padding:8px 14px 8px 36px;border:1px solid var(--border);border-radius:10px;
+  font-size:13px;width:240px;outline:none;background:var(--light);
+  transition:border .2s;
+}
+.search-wrap input:focus{border-color:var(--green);background:#fff}
+.search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:#9CA3AF;fill:none;stroke-width:2}
+.btn-export{
+  display:flex;align-items:center;gap:6px;padding:8px 14px;
+  background:var(--nav);color:#fff;border-radius:10px;font-size:13px;
+  font-weight:600;text-decoration:none;transition:opacity .2s;
+}
+.btn-export:hover{opacity:.88}
+.btn-broadcast{
+  display:flex;align-items:center;gap:6px;padding:8px 14px;
+  background:var(--orange);color:#fff;border-radius:10px;font-size:13px;
+  font-weight:600;border:none;cursor:pointer;transition:opacity .2s;
+}
+.btn-broadcast:hover{opacity:.88}
+
+/* ── PAGE CONTENT ── */
+.page-body{padding:24px 28px}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{
+  background:var(--white);border-radius:14px;padding:20px 22px;
+  border:1px solid var(--border);position:relative;overflow:hidden;
+}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi-card.green::before{background:var(--green)}
+.kpi-card.orange::before{background:var(--orange)}
+.kpi-card.blue::before{background:var(--blue)}
+.kpi-card.red::before{background:var(--red)}
+.kpi-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.kpi-icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kpi-icon.green{background:rgba(45,181,76,.1);color:var(--green)}
+.kpi-icon.orange{background:rgba(232,84,26,.1);color:var(--orange)}
+.kpi-icon.blue{background:rgba(0,180,216,.1);color:var(--blue)}
+.kpi-icon.red{background:rgba(232,69,69,.1);color:var(--red)}
+.kpi-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--dark);line-height:1}
+.kpi-lbl{font-size:13px;color:var(--gray);margin-top:4px}
+.kpi-trend{font-size:12px;margin-top:8px;font-weight:500}
+.trend-up{color:var(--green)}.trend-dn{color:var(--red)}.trend-neu{color:var(--gray)}
+
+/* ── CHARTS ROW ── */
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:var(--white);border-radius:14px;padding:20px 22px;border:1px solid var(--border)}
+.chart-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--dark);margin-bottom:16px}
+
+/* ── TABLES ── */
+.section-card{background:var(--white);border-radius:14px;border:1px solid var(--border);margin-bottom:20px;overflow:hidden}
+.section-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.section-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--dark)}
+.section-count{font-size:12px;color:var(--gray);background:var(--light);padding:3px 10px;border-radius:100px}
+
+/* Filter pills */
+.filter-row{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.f-pill{padding:5px 12px;border-radius:100px;border:1px solid var(--border);background:var(--white);font-size:12px;font-weight:500;color:var(--gray);cursor:pointer;transition:all .15s}
+.f-pill:hover{border-color:var(--dark);color:var(--dark)}
+.f-pill.on{background:var(--nav);color:#fff;border-color:var(--nav)}
+.f-pill.danger.on{background:var(--red);border-color:var(--red)}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;padding:10px 20px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+.data-table th.sortable{cursor:pointer}.data-table th.sortable:hover{color:var(--dark)}
+.data-table td{padding:12px 20px;font-size:13px;border-bottom:1px solid #F9FAFB;vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:#FAFAFA}
+
+/* Avatar */
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.user-cell{display:flex;align-items:center;gap:10px}
+.user-name{font-weight:600;font-size:13px;color:var(--dark)}
+.user-email{font-size:11px;color:var(--gray);margin-top:1px}
+
+/* Status badges */
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;display:inline-block}
+.badge.active{background:rgba(45,181,76,.1);color:#166534}
+.badge.blocked{background:rgba(232,69,69,.1);color:#B91C1C}
+.badge.pending{background:rgba(245,166,35,.1);color:#92400e}
+.badge.open{background:rgba(0,180,216,.1);color:#0E7490}
+.badge.closed{background:#F3F4F6;color:var(--gray)}
+
+/* Action buttons */
+.act-btns{display:flex;gap:6px;align-items:center}
+.btn-sm{padding:5px 11px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.btn-sm svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
+.btn-view{background:#fff;color:var(--dark);border-color:var(--border)}
+.btn-view:hover{background:var(--light)}
+.btn-block{background:#fff;color:var(--orange);border-color:rgba(232,84,26,.3)}
+.btn-block:hover{background:rgba(232,84,26,.06)}
+.btn-unblock{background:#fff;color:var(--green);border-color:rgba(45,181,76,.3)}
+.btn-unblock:hover{background:rgba(45,181,76,.06)}
+.btn-delete{background:#fff;color:var(--red);border-color:rgba(232,69,69,.3)}
+.btn-delete:hover{background:rgba(232,69,69,.06)}
+.btn-validate{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-validate:hover{opacity:.88}
+.btn-danger-lg{background:var(--red);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:opacity .2s}
+.btn-danger-lg:hover{opacity:.88}
+.btn-cancel-lg{background:var(--white);color:var(--dark);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:500;cursor:pointer;width:100%}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;gap:4px;padding:12px 20px;border-top:1px solid var(--border)}
+.pg-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;background:var(--white);color:var(--dark);transition:all .15s}
+.pg-btn:hover{background:var(--light)}.pg-btn.on{background:var(--nav);color:#fff;border-color:var(--nav)}
+.pg-info{font-size:12px;color:var(--gray);margin-left:auto}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:18px;padding:32px;max-width:420px;width:90%;box-shadow:0 24px 80px rgba(0,0,0,.2);text-align:center}
+.modal-icon{width:56px;height:56px;border-radius:50%;background:rgba(232,69,69,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.modal-icon svg{width:24px;height:24px;stroke:var(--red);fill:none;stroke-width:2}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--dark);margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:6px}
+.modal-warn{background:rgba(232,69,69,.06);border:1px solid rgba(232,69,69,.15);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--red);margin:14px 0 20px}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── JOURNAL ENTRIES ── */
+.log-entry{display:flex;align-items:flex-start;gap:10px;padding:10px 20px;border-bottom:1px solid #F9FAFB;font-size:13px}
+.log-entry:last-child{border-bottom:none}
+.log-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:4px}
+.log-time{font-size:11px;color:var(--gray);white-space:nowrap;margin-left:auto}
+
+/* ── BROADCAST MODAL ── */
+.broadcast-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center}
+.broadcast-modal.open{display:flex}
+.broadcast-box{background:#fff;border-radius:18px;padding:28px;max-width:460px;width:90%}
+.broadcast-box h3{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:16px}
+.broadcast-box textarea{width:100%;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:14px;font-family:'DM Sans',sans-serif;resize:none;outline:none;height:100px}
+.broadcast-box textarea:focus{border-color:var(--green)}
+
+/* Broadcast cible cards */
+.cible-card{
+  padding:12px;border:1.5px solid var(--border);border-radius:12px;
+  cursor:pointer;transition:all .15s;background:#fff;text-align:center;
+  user-select:none;
+}
+.cible-card.on{border-color:var(--orange);background:rgba(232,84,26,.05)}
+.cible-card:hover{border-color:var(--orange);background:rgba(232,84,26,.03)}
+
+/* Responsive */
+@media(max-width:1024px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.charts-row{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.main-content{margin-left:0}.kpi-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="sidebar-logo" style="display:flex;align-items:center">
+    <img src="/static/img/logo.png" alt="Logo">
+    <div class="sidebar-logo-txt">Let's Meet<span>ADMIN</span></div>
+  </div>
+
+  <div class="sidebar-section-label">Principal</div>
+  <a href="#dashboard" class="sidebar-link active" onclick="showSection('dashboard',this)">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </a>
+  <a href="#users" class="sidebar-link" onclick="showSection('users',this)">
+    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Utilisateurs
+    <span class="sidebar-badge">{{stats.nb_users}}</span>
+  </a>
+  <a href="#activities" class="sidebar-link" onclick="showSection('activities',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+    Activités
+  </a>
+
+  <div class="sidebar-section-label">Modération</div>
+  <a href="#signalements" class="sidebar-link" onclick="showSection('signalements',this)">
+    <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Signalements
+    {% if stats.signalements > 0 %}<span class="sidebar-badge">{{stats.signalements}}</span>{% endif %}
+  </a>
+  <a href="#attente" class="sidebar-link" onclick="showSection('attente',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    En attente
+    {% if stats.en_attente > 0 %}<span class="sidebar-badge" style="background:var(--orange)">{{stats.en_attente}}</span>{% endif %}
+  </a>
+
+  <div class="sidebar-section-label">Outils</div>
+  <a href="#journal" class="sidebar-link" onclick="showSection('journal',this)">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    Journal
+  </a>
+  <a href="/admin/export_csv" class="sidebar-link">
+    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Export CSV
+  </a>
+  <a href="/admin/logout" class="sidebar-link" style="color:rgba(232,69,69,.7);margin-top:8px">
+    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    Déconnexion
+  </a>
+
+  <div class="sidebar-status">
+    <span class="status-dot"></span>
+    <span class="status-txt">Système opérationnel</span>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div class="main-content">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">📊 Tableau de Bord</div>
+    <div class="topbar-right">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="global-search" placeholder="Rechercher un membre, activité..." oninput="globalSearch(this.value)">
+      </div>
+      <button class="btn-broadcast" onclick="document.getElementById('broadcast-modal').classList.add('open')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+        Broadcast
+      </button>
+      <a href="/admin/export_csv" class="btn-export">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        CSV
+      </a>
+    </div>
+  </div>
+
+  <div class="page-body">
+
+  <!-- ══════════════════════════════════
+       SECTION: DASHBOARD
+  ══════════════════════════════════ -->
+  <div id="sec-dashboard">
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card green">
+        <div class="kpi-icon green">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        </div>
+        <div class="kpi-num">{{stats.actifs}}</div>
+        <div class="kpi-lbl">Membres actifs</div>
+        <div class="kpi-trend trend-up">↑ +{{stats.new_users_week}} cette semaine</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-icon orange">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        </div>
+        <div class="kpi-num">{{stats.ouvertes}}</div>
+        <div class="kpi-lbl">Activités ouvertes</div>
+        <div class="kpi-trend trend-up">↑ +{{stats.new_acts_week}} cette semaine</div>
+      </div>
+      <div class="kpi-card {% if stats.en_attente > 0 %}red{% else %}blue{% endif %}">
+        <div class="kpi-icon {% if stats.en_attente > 0 %}red{% else %}blue{% endif %}">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="kpi-num">{{stats.en_attente}}</div>
+        <div class="kpi-lbl">Comptes en attente</div>
+        <div class="kpi-trend {% if stats.en_attente > 0 %}trend-dn{% else %}trend-neu{% endif %}">
+          {% if stats.en_attente > 0 %}⚠️ À valider{% else %}✅ Aucun{% endif %}
+        </div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-icon blue">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="kpi-num">{{stats.total_messages}}</div>
+        <div class="kpi-lbl">Messages échangés</div>
+        <div class="kpi-trend trend-neu">Total historique</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">📈 Nouvelles inscriptions — 30 derniers jours</div>
+        <canvas id="chartLine" height="100"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🏅 Activités par type</div>
+        <canvas id="chartDonut" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Broadcast History -->
+    <div class="section-card" style="margin-bottom:24px">
+      <div class="section-header" style="cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <div class="section-title">📢 Historique des broadcasts</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="section-count">{{broadcast_logs|length}} envois</span>
+          <button onclick="event.stopPropagation();document.getElementById('broadcast-modal').classList.add('open')"
+                  style="padding:6px 14px;background:var(--orange);color:#fff;border:none;border-radius:8px;
+                         font-size:12px;font-weight:600;cursor:pointer">
+            + Nouveau broadcast
+          </button>
+        </div>
+      </div>
+      <div id="broadcast-history-body">
+        {% if broadcast_logs %}
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Message</th>
+              <th>Ciblage</th>
+              <th>Destinataires</th>
+              <th>Email</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for bl in broadcast_logs %}
+            <tr>
+              <td style="max-width:260px">
+                <div style="font-size:13px;color:var(--dark);font-weight:500;
+                            white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px"
+                     title="{{bl.message}}">
+                  {{bl.message[:60]}}{% if bl.message|length > 60 %}…{% endif %}
+                </div>
+              </td>
+              <td>
+                {% if bl.cible == 'tous' %}
+                  <span class="badge active">👥 Tous</span>
+                {% elif bl.cible == 'actifs' %}
+                  <span class="badge" style="background:rgba(232,84,26,.1);color:#B45309">🔥 Actifs</span>
+                {% elif bl.cible == 'ville' %}
+                  <span class="badge" style="background:rgba(0,180,216,.1);color:#0E7490">📍 {{bl.ville_cible}}</span>
+                {% elif bl.cible == 'email_verifie' %}
+                  <span class="badge" style="background:rgba(45,181,76,.1);color:#166534">✅ Vérifiés</span>
+                {% endif %}
+              </td>
+              <td style="font-weight:600;font-size:14px">{{bl.nb_envoyes}}</td>
+              <td>
+                {% if bl.avec_email %}
+                  <span style="color:var(--green);font-size:12px;font-weight:600">📧 Oui</span>
+                {% else %}
+                  <span style="color:var(--gray);font-size:12px">Non</span>
+                {% endif %}
+              </td>
+              <td style="color:var(--gray);font-size:12px;white-space:nowrap">{{bl.date_str()}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div style="text-align:center;padding:32px;color:var(--gray)">
+          <div style="font-size:36px;margin-bottom:8px">📢</div>
+          <div style="font-size:14px;font-weight:500">Aucun broadcast encore envoyé</div>
+          <div style="font-size:12px;margin-top:4px">Clique sur "+ Nouveau broadcast" pour commencer</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Quick stats row -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+      <div class="kpi-card" style="border-left:3px solid var(--green)">
+        <div class="kpi-num" style="font-size:22px">{{stats.nb_users}}</div>
+        <div class="kpi-lbl">Membres totaux</div>
+      </div>
+      <div class="kpi-card" style="border-left:3px solid var(--orange)">
+        <div class="kpi-num" style="font-size:22px">{{stats.nb_acts}}</div>
+        <div class="kpi-lbl">Activités créées</div>
+      </div>
+      <div class="kpi-card" style="border-left:3px solid var(--red)">
+        <div class="kpi-num" style="font-size:22px">{{stats.signalements}}</div>
+        <div class="kpi-lbl">Signalements actifs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SECTION: UTILISATEURS
+  ══════════════════════════════════ -->
+  <div id="sec-users" style="display:none">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">👥 Membres</div>
+        <span class="section-count">{{users|length}} au total</span>
+      </div>
+
+      <!-- Search + filters -->
+      <div class="filter-row">
+        <div style="position:relative;flex:1;max-width:280px">
+          <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:#9CA3AF;fill:none;stroke-width:2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Rechercher..." oninput="filterUsers(this.value)"
+                 style="width:100%;padding:7px 12px 7px 30px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none">
+        </div>
+        <button class="f-pill on" onclick="filterStatus('all',this)">Tous</button>
+        <button class="f-pill" onclick="filterStatus('actif',this)">Actifs</button>
+        <button class="f-pill" onclick="filterStatus('bloque',this)">Bloqués</button>
+        <button class="f-pill danger" onclick="filterStatus('attente',this)">En attente</button>
+      </div>
+
+      <table class="data-table" id="users-table">
+        <thead>
+          <tr>
+            <th class="sortable" onclick="sortTable(0)">Membre ↕</th>
+            <th class="sortable" onclick="sortTable(1)">Ville ↕</th>
+            <th>Inscrit le</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set av_colors = ['#E8541A','#2DB54C','#00B4D8','#7B2D8B','#F5A623','#0077B6','#C67C3A'] %}
+          {% for u in users %}
+          {% set col = av_colors[loop.index0 % av_colors|length] %}
+          <tr data-name="{{u.prenom|lower}} {{u.nom|lower}}"
+              data-status="{% if u.est_bloque %}bloque{% elif not u.est_valide %}attente{% else %}actif{% endif %}">
+            <td>
+              <div class="user-cell">
+                <div class="av" style="background:{{col}}">
+                  {% if u.get_photo_url() %}
+                    <img src="{{u.get_photo_url()}}">
+                  {% else %}
+                    {{u.prenom[0]}}{{u.nom[0]}}
+                  {% endif %}
+                </div>
+                <div>
+                  <a href="/admin/user/{{u.id}}" class="user-name" style="text-decoration:none;color:var(--dark)">{{u.prenom}} {{u.nom}}</a>
+                  <div class="user-email">{{u.email}}</div>
+                </div>
+              </div>
+            </td>
+            <td style="color:var(--gray);font-size:12px">📍 {{u.ville}}</td>
+            <td style="color:var(--gray);font-size:12px">{{u.date_inscription or '—'}}</td>
+            <td>
+              {% if u.est_bloque %}
+                <span class="badge blocked">Bloqué</span>
+              {% elif not u.est_valide %}
+                <span class="badge pending">En attente</span>
+              {% else %}
+                <span class="badge active">Actif</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="act-btns">
+                <a href="/admin/user/{{u.id}}" class="btn-sm btn-view">
+                  <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Voir
+                </a>
+                {% if u.est_bloque %}
+                  <a href="/admin/unblock/{{u.id}}" class="btn-sm btn-unblock">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    Débloquer
+                  </a>
+                {% else %}
+                  <a href="/admin/block/{{u.id}}" class="btn-sm btn-block"
+                     onclick="return confirm('Bloquer {{u.prenom}} {{u.nom}} ?')">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                    Bloquer
+                  </a>
+                {% endif %}
+                <button class="btn-sm btn-delete" onclick="openDeleteModal({{u.id}},'{{u.prenom}} {{u.nom}}')">
+                  <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                  Supprimer
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SECTION: ACTIVITÉS
+  ══════════════════════════════════ -->
+  <div id="sec-activities" style="display:none">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">🎯 Activités</div>
+        <span class="section-count">{{activities|length}} au total</span>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Activité</th>
+            <th>Type</th>
+            <th>Créateur</th>
+            <th>Date</th>
+            <th>Places</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for act in activities %}
+          <tr>
+            <td style="font-weight:600;max-width:200px">{{act.titre}}</td>
+            <td><span style="background:rgba(0,180,216,.08);color:#0E7490;padding:3px 8px;border-radius:6px;font-size:11px">{{act.type_activite}}</span></td>
+            <td>
+              <a href="/admin/user/{{act.createur_id}}" style="color:var(--dark);text-decoration:none;font-size:13px">
+                {{act.createur.prenom if act.createur else '—'}}
+              </a>
+            </td>
+            <td style="color:var(--gray);font-size:12px">{{act.date_activite}}</td>
+            <td style="font-size:13px">{{act.nb_participants()}}/{{act.nb_max}}</td>
+            <td>
+              <span class="badge {{'open' if act.statut == 'Ouverte' else 'closed'}}">{{act.statut}}</span>
+            </td>
+            <td>
+              <div class="act-btns">
+                <a href="/activity/{{act.id}}" target="_blank" class="btn-sm btn-view">Voir</a>
+                <a href="/admin/delete_activity/{{act.id}}" class="btn-sm btn-delete"
+                   onclick="return confirm('Supprimer cette activité ?')">Supprimer</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SECTION: SIGNALEMENTS
+  ══════════════════════════════════ -->
+  <div id="sec-signalements" style="display:none">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">⚠️ Signalements</div>
+        <span class="section-count">{{signalements|length}}</span>
+      </div>
+      {% if signalements %}
+      <table class="data-table">
+        <thead>
+          <tr><th>Type</th><th>Motif</th><th>Rapporté par</th><th>Statut</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for s in signalements %}
+          <tr>
+            <td><span style="font-size:12px;background:#F3F4F6;padding:3px 8px;border-radius:6px">{{s.type_cible}}</span></td>
+            <td style="max-width:200px;font-size:13px;color:var(--gray)">{{s.motif[:80]}}{{'..' if s.motif|length > 80}}</td>
+            <td>
+              {% set rapporteur = s.rapporteur %}
+              {% if rapporteur %}<a href="/admin/user/{{rapporteur.id}}" style="color:var(--dark);font-size:13px;text-decoration:none">{{rapporteur.prenom}}</a>{% else %}—{% endif %}
+            </td>
+            <td><span class="badge pending">{{s.statut}}</span></td>
+            <td>
+              <div class="act-btns">
+                <a href="/admin/traiter_signalement/{{s.id}}/valider" class="btn-sm btn-block">Valider</a>
+                <a href="/admin/traiter_signalement/{{s.id}}/rejeter" class="btn-sm btn-view">Rejeter</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="text-align:center;padding:48px;color:var(--gray)">
+        <div style="font-size:40px;margin-bottom:10px">✅</div>
+        <div style="font-size:15px;font-weight:600;color:var(--dark)">Aucun signalement en attente</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SECTION: EN ATTENTE
+  ══════════════════════════════════ -->
+  <div id="sec-attente" style="display:none">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">⏳ Comptes en attente de validation</div>
+        <span class="section-count">{{en_attente|length}}</span>
+      </div>
+      {% if en_attente %}
+      <table class="data-table">
+        <thead><tr><th>Membre</th><th>Email</th><th>Ville</th><th>Inscrit</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for u in en_attente %}
+          <tr>
+            <td>
+              <div class="user-cell">
+                <div class="av" style="background:#F5A623">{{u.prenom[0]}}{{u.nom[0]}}</div>
+                <div class="user-name">{{u.prenom}} {{u.nom}}</div>
+              </div>
+            </td>
+            <td style="font-size:12px;color:var(--gray)">{{u.email}}</td>
+            <td style="font-size:12px;color:var(--gray)">{{u.ville}}</td>
+            <td style="font-size:12px;color:var(--gray)">{{u.date_inscription}}</td>
+            <td>
+              <div class="act-btns">
+                <a href="/admin/valider/{{u.id}}" class="btn-sm btn-validate">✅ Valider</a>
+                <button class="btn-sm btn-delete" onclick="openDeleteModal({{u.id}},'{{u.prenom}} {{u.nom}}')">❌ Refuser</button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="text-align:center;padding:48px;color:var(--gray)">
+        <div style="font-size:40px;margin-bottom:10px">✅</div>
+        <div style="font-size:15px;font-weight:600;color:var(--dark)">Aucun compte en attente</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SECTION: JOURNAL
+  ══════════════════════════════════ -->
+  <div id="sec-journal" style="display:none">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">📋 Journal des actions</div>
+        <span class="section-count">{{logs|length}} entrées</span>
+      </div>
+      {% for log in logs %}
+      <div class="log-entry">
+        <div class="log-dot" style="background:{{'#E8541A' if 'supprimé' in log.action|lower or 'bloqué' in log.action|lower else '#2DB54C'}}"></div>
+        <div>{{log.action}}</div>
+        <div class="log-time">{{log.date}}</div>
+      </div>
+      {% else %}
+      <div style="padding:32px;text-align:center;color:var(--gray)">Aucune action enregistrée.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  </div><!-- end page-body -->
+</div><!-- end main-content -->
+
+<!-- ══ MODAL SUPPRESSION ══ -->
+<div class="modal-overlay" id="delete-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+    </div>
+    <div class="modal-title">Supprimer ce compte ?</div>
+    <div class="modal-sub" id="modal-user-name"></div>
+    <div class="modal-warn">⚠️ Cette action est <strong>irréversible</strong>. Toutes les activités, messages et données seront supprimés définitivement.</div>
+    <div class="modal-btns">
+      <button class="btn-cancel-lg" onclick="document.getElementById('delete-modal').classList.remove('open')">Annuler</button>
+      <a id="delete-confirm-link" href="#" class="btn-danger-lg" style="text-decoration:none;display:flex;align-items:center;justify-content:center">Supprimer</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL BROADCAST AMÉLIORÉ ══ -->
+<div class="broadcast-modal" id="broadcast-modal" onclick="if(event.target===this)closeBroadcast()">
+  <div class="broadcast-box" style="max-width:540px;width:95%">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:8px">
+        <span style="font-size:22px">📢</span> Broadcast — Envoyer un message
+      </h3>
+      <button onclick="closeBroadcast()" style="background:none;border:none;cursor:pointer;color:var(--gray);font-size:18px">✕</button>
+    </div>
+
+    <form method="POST" action="/admin/broadcast" id="broadcast-form" onsubmit="return validateBroadcast()">
+      <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+
+      <!-- Message -->
+      <div style="margin-bottom:16px">
+        <label style="font-size:12px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Message *</label>
+        <textarea name="message" id="bc-message"
+                  placeholder="Écris ton message ici..."
+                  required oninput="updatePreview()"
+                  style="width:100%;border:1.5px solid var(--border);border-radius:12px;
+                         padding:12px 14px;font-size:14px;font-family:'DM Sans',sans-serif;
+                         resize:vertical;outline:none;min-height:100px;transition:border .2s"
+                  onfocus="this.style.borderColor='var(--orange)'"
+                  onblur="this.style.borderColor='var(--border)'"></textarea>
+        <div style="font-size:11px;color:var(--gray);margin-top:3px;text-align:right">
+          <span id="bc-count">0</span> / 300 caractères
+        </div>
+      </div>
+
+      <!-- Ciblage -->
+      <div style="margin-bottom:16px">
+        <label style="font-size:12px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">
+          🎯 Ciblage des destinataires
+        </label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <label class="cible-option" onclick="selectCible(this,'tous')">
+            <input type="radio" name="cible" value="tous" checked style="display:none">
+            <div class="cible-card on">
+              <div style="font-size:18px;margin-bottom:3px">👥</div>
+              <div style="font-size:13px;font-weight:600">Tous les membres</div>
+              <div style="font-size:11px;color:var(--gray)">Actifs et non bloqués</div>
+            </div>
+          </label>
+          <label class="cible-option" onclick="selectCible(this,'actifs')">
+            <input type="radio" name="cible" value="actifs" style="display:none">
+            <div class="cible-card">
+              <div style="font-size:18px;margin-bottom:3px">🔥</div>
+              <div style="font-size:13px;font-weight:600">Membres actifs</div>
+              <div style="font-size:11px;color:var(--gray)">Connectés ce mois-ci</div>
+            </div>
+          </label>
+          <label class="cible-option" onclick="selectCible(this,'email_verifie')">
+            <input type="radio" name="cible" value="email_verifie" style="display:none">
+            <div class="cible-card">
+              <div style="font-size:18px;margin-bottom:3px">✅</div>
+              <div style="font-size:13px;font-weight:600">Emails vérifiés</div>
+              <div style="font-size:11px;color:var(--gray)">Compte confirmé</div>
+            </div>
+          </label>
+          <label class="cible-option" onclick="selectCible(this,'ville')">
+            <input type="radio" name="cible" value="ville" style="display:none">
+            <div class="cible-card">
+              <div style="font-size:18px;margin-bottom:3px">📍</div>
+              <div style="font-size:13px;font-weight:600">Par ville</div>
+              <div style="font-size:11px;color:var(--gray)">Choisir une ville</div>
+            </div>
+          </label>
+        </div>
+
+        <!-- Ville selector (affiché si "ville" sélectionné) -->
+        <div id="ville-selector" style="display:none;margin-top:10px">
+          <select name="ville_cible" id="ville_cible"
+                  style="width:100%;padding:10px 14px;border:1.5px solid var(--border);
+                         border-radius:10px;font-size:13px;outline:none;background:#fff">
+            <option value="">Choisir une ville...</option>
+            {% for v in villes %}
+            <option value="{{v}}">📍 {{v}}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!-- Option email -->
+      <div style="background:rgba(0,180,216,.05);border:1.5px solid rgba(0,180,216,.15);
+                  border-radius:12px;padding:12px 16px;margin-bottom:20px;cursor:pointer"
+           onclick="toggleEmailChk()">
+        <div style="display:flex;align-items:center;gap:12px">
+          <!-- Toggle visuel -->
+          <div id="email-toggle-wrap" style="position:relative;width:44px;height:24px;flex-shrink:0">
+            <div id="email-track"
+                 style="position:absolute;inset:0;border-radius:12px;background:#ccc;transition:background .3s"></div>
+            <div id="email-knob"
+                 style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;
+                        background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:left .3s"></div>
+          </div>
+          <!-- Texte -->
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600;color:var(--dark)">📧 Envoyer aussi par email</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:2px">Seulement aux membres avec email vérifié et notifications activées</div>
+          </div>
+          <!-- État -->
+          <span id="email-state-lbl" style="font-size:11px;font-weight:600;color:var(--gray)">Désactivé</span>
+        </div>
+        <!-- Input caché -->
+        <input type="checkbox" name="avec_email" value="1" id="avec-email-chk" style="display:none">
+      </div>
+
+      <!-- Aperçu -->
+      <div id="preview-box" style="display:none;background:var(--light);border-radius:12px;
+           padding:12px 14px;margin-bottom:16px;border-left:3px solid var(--orange)">
+        <div style="font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Aperçu</div>
+        <div style="display:flex;align-items:flex-start;gap:8px">
+          <span style="font-size:18px">📢</span>
+          <div id="preview-text" style="font-size:13px;color:var(--dark);line-height:1.5"></div>
+        </div>
+      </div>
+
+      <!-- Boutons -->
+      <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:10px">
+        <button type="button" onclick="closeBroadcast()"
+                style="padding:12px;border:1px solid var(--border);border-radius:10px;
+                       background:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;
+                       color:var(--dark)">
+          Annuler
+        </button>
+        <button type="submit" id="bc-submit"
+                style="padding:12px;border:none;border-radius:10px;
+                       background:var(--orange);color:#fff;font-size:14px;font-weight:600;
+                       cursor:pointer;font-family:'Syne',sans-serif;
+                       box-shadow:0 4px 12px rgba(232,84,26,.3);transition:all .2s">
+          📢 Envoyer le message
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// ── CHARTS ──
+const lineCtx = document.getElementById('chartLine');
+if (lineCtx) {
+  new Chart(lineCtx, {
+    type: 'line',
+    data: {
+      labels: {{reg_labels|safe}},
+      datasets: [{
+        label: 'Inscriptions',
+        data: {{reg_data|safe}},
+        borderColor: '#2DB54C',
+        backgroundColor: 'rgba(45,181,76,.08)',
+        tension: 0.4, fill: true, pointRadius: 3,
+        pointBackgroundColor: '#2DB54C'
+      }]
+    },
+    options: {
+      responsive: true, plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#F3F4F6' } },
+        x: { ticks: { font: { size: 10 }, maxTicksLimit: 10 }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+const donutCtx = document.getElementById('chartDonut');
+if (donutCtx) {
+  const types = {{types_json|safe}};
+  const keys = Object.keys(types).slice(0, 8);
+  const vals = keys.map(k => types[k]);
+  const colors = ['#2DB54C','#E8541A','#00B4D8','#F5A623','#7B2D8B','#E84545','#0D2B12','#C67C3A'];
+  new Chart(donutCtx, {
+    type: 'doughnut',
+    data: { labels: keys, datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] },
+    options: {
+      responsive: true, cutout: '65%',
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 8 } } }
+    }
+  });
+}
+
+// ── NAVIGATION ──
+function showSection(id, el) {
+  document.querySelectorAll('[id^="sec-"]').forEach(s => s.style.display = 'none');
+  document.getElementById('sec-' + id).style.display = 'block';
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const titles = {
+    dashboard: '📊 Tableau de Bord', users: '👥 Utilisateurs',
+    activities: '🎯 Activités', signalements: '⚠️ Signalements',
+    attente: '⏳ En attente', journal: '📋 Journal'
+  };
+  document.getElementById('page-title').textContent = titles[id] || 'Admin';
+  return false;
+}
+
+// ── SEARCH & FILTER ──
+function filterUsers(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('#users-table tbody tr').forEach(row => {
+    const name = row.dataset.name || '';
+    row.style.display = name.includes(q) ? '' : 'none';
+  });
+}
+
+let currentFilter = 'all';
+function filterStatus(status, btn) {
+  currentFilter = status;
+  document.querySelectorAll('.f-pill').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  document.querySelectorAll('#users-table tbody tr').forEach(row => {
+    if (status === 'all') { row.style.display = ''; return; }
+    row.style.display = (row.dataset.status === status) ? '' : 'none';
+  });
+}
+
+function globalSearch(q) {
+  if (!q) return;
+  showSection('users', document.querySelector('.sidebar-link[onclick*="users"]'));
+  filterUsers(q);
+}
+
+// ── SORT ──
+let sortDir = 1;
+function sortTable(col) {
+  const tbody = document.querySelector('#users-table tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  rows.sort((a, b) => {
+    const av = a.cells[col]?.textContent.trim().toLowerCase() || '';
+    const bv = b.cells[col]?.textContent.trim().toLowerCase() || '';
+    return av.localeCompare(bv) * sortDir;
+  });
+  sortDir *= -1;
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+// ── DELETE MODAL ──
+function openDeleteModal(uid, name) {
+  document.getElementById('modal-user-name').textContent = name;
+  document.getElementById('delete-confirm-link').href = '/admin/delete_user/' + uid;
+  document.getElementById('delete-modal').classList.add('open');
+}
+
+// ── BROADCAST MODAL ──
+function closeBroadcast() {
+  document.getElementById('broadcast-modal').classList.remove('open');
+}
+
+function selectCible(label, val) {
+  // Update all cards visual state
+  document.querySelectorAll('.cible-card').forEach(c => c.classList.remove('on'));
+  label.querySelector('.cible-card').classList.add('on');
+  // Show/hide ville selector
+  const villeDiv = document.getElementById('ville-selector');
+  villeDiv.style.display = (val === 'ville') ? 'block' : 'none';
+  if (val !== 'ville') {
+    document.getElementById('ville_cible').value = '';
+  }
+}
+
+function toggleEmailChk() {
+  const chk   = document.getElementById('avec-email-chk');
+  const track = document.getElementById('email-track');
+  const knob  = document.getElementById('email-knob');
+  const lbl   = document.getElementById('email-state-lbl');
+  chk.checked = !chk.checked;
+  track.style.background = chk.checked ? 'var(--blue)' : '#ccc';
+  knob.style.left  = chk.checked ? '23px' : '3px';
+  lbl.textContent  = chk.checked ? 'Activé' : 'Désactivé';
+  lbl.style.color  = chk.checked ? 'var(--blue)' : 'var(--gray)';
+}
+
+function updatePreview() {
+  const msg = document.getElementById('bc-message').value.trim();
+  const previewBox = document.getElementById('preview-box');
+  const previewText = document.getElementById('preview-text');
+  const countEl = document.getElementById('bc-count');
+  countEl.textContent = msg.length;
+  if (msg.length > 300) {
+    countEl.style.color = 'var(--red)';
+  } else {
+    countEl.style.color = 'var(--gray)';
+  }
+  if (msg) {
+    previewBox.style.display = 'block';
+    previewText.textContent = msg;
+  } else {
+    previewBox.style.display = 'none';
+  }
+}
+
+function validateBroadcast() {
+  const msg = document.getElementById('bc-message').value.trim();
+  if (!msg) { alert('Le message est obligatoire.'); return false; }
+  if (msg.length > 300) { alert('Le message ne doit pas dépasser 300 caractères.'); return false; }
+  const cible = document.querySelector('input[name="cible"]:checked')?.value;
+  if (cible === 'ville' && !document.getElementById('ville_cible').value) {
+    alert('Sélectionne une ville.'); return false;
+  }
+  const btn = document.getElementById('bc-submit');
+  btn.textContent = '⏳ Envoi en cours...';
+  btn.disabled = true;
+  return true;
+}
+
+// ── URL HASH + PARAM ──
+window.addEventListener('load', function() {
+  // Check URL param first (?tab=users)
+  const params = new URLSearchParams(window.location.search);
+  const tab = params.get('tab') || window.location.hash.replace('#', '');
+  const valid = ['dashboard','users','activities','signalements','attente','journal'];
+  if (valid.includes(tab)) {
+    const link = document.querySelector(`.sidebar-link[onclick*="${tab}"]`);
+    showSection(tab, link);
+  }
+});
+</script>
+</body>
+</html>

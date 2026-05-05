@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Mes souvenirs{% endblock %}
+{% block content %}
+{% set IMG = {
+  'Football':                    'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80',
+  'Basketball':                  'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&q=80',
+  'Padel':                       'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&q=80',
+  'Tennis':                      'https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=600&q=80',
+  'Volleyball':                  'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=600&q=80',
+  'Course à pied':               'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80',
+  'Natation':                    'https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=600&q=80',
+  'Yoga':                        'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80',
+  'Salle de sport':              'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80',
+  'Vélo':                        'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&q=80',
+  'Marche':                      'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=600&q=80',
+  'Projet de fin d\'études':    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80',
+  'Café entre étudiants':        'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=600&q=80',
+  'Sortie restaurant':           'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80',
+  'Glace':                       'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&q=80',
+  'Snack':                       'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=600&q=80',
+  'Cinéma':                      'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=600&q=80',
+  'Jeux (PlayStation, jeux de société)': 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&q=80',
+  'Explorer Marrakech':          'https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=600&q=80',
+  'Visiter des lieux culturels': 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=600&q=80',
+  'Regarder le coucher de soleil':'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80',
+  'Shopping':                    'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80',
+  'Explorer la ville':           'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&q=80'
+} %}
+{% set EMO = {'Football':'⚽','Course à pied':'🏃','Café entre étudiants':'☕','Yoga':'🧘','Natation':'🏊','Vélo':'🚴','Basketball':'🏀','Sortie restaurant':'🍽️','Explorer la ville':'🏙️','Regarder le coucher de soleil':'🌅'} %}
+<div class="main" style="max-width:900px">
+  <div class="sec-title" style="margin-bottom:20px">📸 Mes souvenirs</div>
+
+  <!-- Stats rapides -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px">
+    <div style="background:var(--white);border-radius:16px;padding:20px;text-align:center;border:1px solid var(--border)">
+      <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--orange)">{{total_acts}}</div>
+      <div style="font-size:13px;color:var(--gray);margin-top:4px">Activités vécues</div>
+    </div>
+    <div style="background:var(--white);border-radius:16px;padding:20px;text-align:center;border:1px solid var(--border)">
+      <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--blue)">{{villes_visitees|length}}</div>
+      <div style="font-size:13px;color:var(--gray);margin-top:4px">Villes explorées</div>
+    </div>
+    <div style="background:var(--white);border-radius:16px;padding:20px;text-align:center;border:1px solid var(--border)">
+      <div style="font-size:28px;margin-bottom:4px">{{EMO.get(type_favori,'🎯')}}</div>
+      <div style="font-size:13px;color:var(--gray)">Activité préférée</div>
+      <div style="font-size:12px;color:var(--orange);font-weight:600;margin-top:2px">{{type_favori}}</div>
+    </div>
+  </div>
+
+  <!-- Activités passées rejointes -->
+  {% if passees_rejointes %}
+  <div class="sec-head" style="margin-bottom:16px">
+    <div class="sec-title">🤝 Activités rejointes</div>
+  </div>
+  <div class="grid3" style="margin-bottom:28px">
+  {% for act in passees_rejointes %}
+    {% set img = IMG.get(act.type_activite,'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&q=70') %}
+    {% set emo = EMO.get(act.type_activite,'🎯') %}
+    <a href="/activity/{{act.id}}" class="act-card" style="opacity:.85">
+      <div class="act-card-img" style="background-image:url('{{img}}');filter:grayscale(15%)"></div>
+      <div class="act-card-overlay"></div>
+      <div style="position:absolute;top:12px;left:12px;z-index:2;background:rgba(0,0,0,.5);color:#fff;font-size:11px;padding:3px 10px;border-radius:20px;backdrop-filter:blur(8px)">📅 Passée</div>
+      <div class="act-card-body">
+        <div class="act-card-type">{{emo}} {{act.type_activite}}</div>
+        <div class="act-card-title">{{act.titre}}</div>
+        <div class="act-card-meta"><span>📅 {{act.date_activite}}</span><span>📍 {{act.lieu|truncate(18,true,'')}}</span></div>
+      </div>
+    </a>
+  {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Activités créées -->
+  {% if passees_creees %}
+  <div class="sec-head" style="margin-bottom:16px">
+    <div class="sec-title">🎯 Activités que j'ai organisées</div>
+  </div>
+  <div class="grid3" style="margin-bottom:28px">
+  {% for act in passees_creees %}
+    {% set img = IMG.get(act.type_activite,'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&q=70') %}
+    {% set emo = EMO.get(act.type_activite,'🎯') %}
+    <a href="/activity/{{act.id}}" class="act-card" style="opacity:.85">
+      <div class="act-card-img" style="background-image:url('{{img}}')"></div>
+      <div class="act-card-overlay"></div>
+      <div style="position:absolute;top:12px;left:12px;z-index:2;background:rgba(232,84,26,.7);color:#fff;font-size:11px;padding:3px 10px;border-radius:20px">⭐ Organisée</div>
+      <div class="act-card-body">
+        <div class="act-card-type">{{emo}} {{act.type_activite}}</div>
+        <div class="act-card-title">{{act.titre}}</div>
+        <div class="act-card-meta"><span>📅 {{act.date_activite}}</span><span>👥 {{act.nb_participants()}} membres</span></div>
+      </div>
+    </a>
+  {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if not passees_rejointes and not passees_creees %}
+  <div style="text-align:center;padding:60px;background:var(--white);border-radius:20px">
+    <div style="font-size:52px;margin-bottom:14px">📸</div>
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px">Aucun souvenir pour l'instant</div>
+    <p style="color:var(--gray);font-size:14px;margin-bottom:20px">Rejoins des activités pour créer tes premiers souvenirs !</p>
+    <a href="/activities" class="btn btn-orange" style="font-size:14px;padding:12px 28px">🎯 Explorer les activités</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

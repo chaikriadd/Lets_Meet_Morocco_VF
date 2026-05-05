@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Let's Meet Morocco — Trouve tes activités, rencontre des gens</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange: #E8541A;
+  --blue:   #00B4D8;
+  --purple: #7B2D8B;
+  --green:  #2DB54C;
+  --gold:   #F5A623;
+  --dark:   #0D2B12;
+  --nav-bg: #0D2B12;
+  --white:  #FFFFFF;
+  --gray:   #6B7C8D;
+  --cream:  #F0FBF1;
+  --accent: #1a5c2a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; color: var(--dark); overflow-x: hidden; }
+
+/* ── NAVBAR ── */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  padding: 0 48px; height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(13,43,18,0.97); backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  transition: all .3s;
+}
+.navbar::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--green), var(--orange), var(--blue), var(--gold), var(--green));
+}
+.nav-brand {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px;
+  color: #fff; text-decoration: none; letter-spacing: -0.5px;
+}
+.nav-brand .o { color: var(--orange); }
+.nav-brand .g { color: var(--blue); }
+.nav-brand .b { color: var(--blue); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-link {
+  color: rgba(255,255,255,0.7); text-decoration: none;
+  font-size: 14px; font-weight: 500; padding: 8px 16px;
+  border-radius: 10px; transition: all .2s;
+}
+.nav-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-cta {
+  background: linear-gradient(135deg, var(--orange), var(--gold));
+  color: #fff; font-family: 'Syne', sans-serif; font-weight: 700;
+  font-size: 14px; padding: 10px 24px; border-radius: 10px;
+  text-decoration: none; transition: all .2s;
+  box-shadow: 0 4px 16px rgba(232,84,26,.35);
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(232,84,26,.4); }
+
+/* ── HERO SECTION ── */
+.hero {
+  min-height: 100vh;
+  background: #071a09;
+  display: flex; align-items: center;
+  position: relative; overflow: hidden; padding: 100px 48px 60px;
+}
+/* Real background image — group of friends outdoors */
+.hero-bg-img {
+  position: absolute; inset: 0; z-index: 0;
+  background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1600&q=85');
+  background-size: cover; background-position: center 30%;
+  filter: brightness(0.28) saturate(1.1);
+}
+.hero-bg {
+  position: absolute; inset: 0; z-index: 1;
+  background:
+    linear-gradient(110deg, rgba(7,21,9,1.0) 0%, rgba(7,21,9,0.92) 38%, rgba(10,14,18,0.55) 65%, rgba(10,14,18,0.15) 100%),
+    radial-gradient(ellipse 50% 70% at 80% 50%, rgba(232,84,26,.15) 0%, transparent 60%),
+    radial-gradient(ellipse 30% 50% at 5%  80%, rgba(0,180,216,.1) 0%, transparent 55%);
+}
+.hero-dots {
+  position: absolute; inset: 0; z-index: 2; opacity: .04;
+  background-image: radial-gradient(circle, #fff 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.hero-content { position: relative; z-index: 3; max-width: 620px; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(232,84,26,.15); border: 1px solid rgba(232,84,26,.3);
+  color: var(--orange); font-size: 12px; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px; margin-bottom: 24px;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif; font-size: 56px; font-weight: 800;
+  line-height: 1.05; color: #fff; margin-bottom: 20px; letter-spacing: -2px;
+}
+.hero h1 .accent {
+  background: linear-gradient(135deg, var(--orange), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero h1 .accent2 { color: var(--white); -webkit-text-fill-color: var(--white); }
+.hero-sub {
+  font-size: 17px; color: rgba(255,255,255,.65); line-height: 1.7;
+  margin-bottom: 36px; font-weight: 300; max-width: 500px;
+}
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 48px; }
+.btn-hero-main {
+  background: linear-gradient(135deg, var(--orange), var(--gold));
+  color: #fff; font-family: 'Syne', sans-serif; font-weight: 700;
+  font-size: 15px; padding: 15px 32px; border-radius: 12px; border: none;
+  cursor: pointer; text-decoration: none; display: inline-block;
+  box-shadow: 0 8px 28px rgba(232,84,26,.4); transition: all .2s;
+  letter-spacing: .3px;
+}
+.btn-hero-main:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(232,84,26,.45); }
+.btn-hero-sec {
+  background: rgba(255,255,255,.08); color: #fff; font-size: 15px;
+  padding: 15px 32px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.18); cursor: pointer;
+  text-decoration: none; display: inline-block; font-weight: 500; transition: all .2s;
+}
+.btn-hero-sec:hover { background: rgba(255,255,255,.14); }
+.hero-stats { display: flex; gap: 36px; flex-wrap: wrap; }
+.hero-stat { text-align: center; }
+.hero-stat .n {
+  font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; color: #fff;
+  background: linear-gradient(135deg, var(--orange), var(--blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-stat .l { font-size: 13px; color: rgba(255,255,255,.5); margin-top: 2px; }
+
+/* Hero right — floating cards */
+.hero-visual {
+  position: absolute; right: 48px; top: 50%; transform: translateY(-50%);
+  width: 440px; height: 480px; z-index: 3;
+}
+.floating-card {
+  position: absolute; background: rgba(7,25,10,.75);
+  border: 1px solid rgba(255,255,255,.14); border-radius: 16px;
+  backdrop-filter: blur(20px); padding: 16px 20px;
+  animation: float 6s ease-in-out infinite;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+}
+.floating-card:nth-child(1) { top: 0; left: 20px; width: 220px; animation-delay: 0s; }
+.floating-card:nth-child(2) { top: 100px; right: 0; width: 200px; animation-delay: 1.5s; }
+.floating-card:nth-child(3) { bottom: 80px; left: 0; width: 210px; animation-delay: 3s; }
+.floating-card:nth-child(4) { bottom: 0; right: 20px; width: 190px; animation-delay: 4.5s; }
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+.fc-img { width: 100%; height: 90px; border-radius: 10px; object-fit: cover; margin-bottom: 10px; }
+.fc-badge {
+  font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 8px;
+  display: inline-block; margin-bottom: 6px; letter-spacing: .4px;
+}
+.fc-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.fc-meta { font-size: 11px; color: rgba(255,255,255,.5); }
+.fc-prog { height: 4px; background: rgba(255,255,255,.15); border-radius: 4px; margin-top: 8px; }
+.fc-prog-bar { height: 4px; border-radius: 4px; }
+
+/* ── SECTION COMMUNE ── */
+section { padding: 80px 48px; }
+.section-center { text-align: center; margin-bottom: 56px; }
+.section-eyebrow {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 5px 14px; border-radius: 20px; margin-bottom: 16px;
+}
+.section-title {
+  font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 800;
+  line-height: 1.15; letter-spacing: -1px; margin-bottom: 16px;
+}
+.section-sub { font-size: 17px; color: var(--gray); line-height: 1.7; max-width: 580px; margin: 0 auto; }
+
+/* ── AVANTAGES / FEATURES ── */
+.features-bg { background: var(--cream); }
+.features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+.feat-card {
+  background: #fff; border-radius: 20px; padding: 32px 28px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.07);
+  border: 1px solid rgba(0,0,0,.05);
+  transition: transform .3s, box-shadow .3s;
+  position: relative; overflow: hidden;
+}
+.feat-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,.12); }
+.feat-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.feat-card:nth-child(1)::before { background: linear-gradient(90deg, var(--orange), var(--blue)); }
+.feat-card:nth-child(2)::before { background: linear-gradient(90deg, var(--orange), var(--gold)); }
+.feat-card:nth-child(3)::before { background: linear-gradient(90deg, var(--purple), var(--blue)); }
+.feat-card:nth-child(4)::before { background: linear-gradient(90deg, var(--blue), var(--orange)); }
+.feat-card:nth-child(5)::before { background: linear-gradient(90deg, var(--gold), var(--orange)); }
+.feat-card:nth-child(6)::before { background: linear-gradient(90deg, var(--orange), var(--purple)); }
+.feat-icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; margin-bottom: 20px;
+}
+.feat-card h3 {
+  font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700;
+  margin-bottom: 10px; color: var(--dark);
+}
+.feat-card p { font-size: 14px; color: var(--gray); line-height: 1.7; }
+
+/* ── ACTIVITIES SHOWCASE ── */
+.activities-bg { background: #fff; }
+.acts-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.act-showcase {
+  border-radius: 18px; overflow: hidden; position: relative;
+  height: 240px; cursor: pointer; transition: transform .3s;
+}
+.act-showcase:hover { transform: scale(1.03); }
+.act-showcase img {
+  width: 100%; height: 100%; object-fit: cover; transition: transform .4s;
+}
+.act-showcase:hover img { transform: scale(1.08); }
+.act-showcase-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,.75) 100%);
+}
+.act-showcase-info {
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 18px;
+}
+.act-showcase-badge {
+  font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 8px;
+  display: inline-block; margin-bottom: 6px; letter-spacing: .4px;
+}
+.act-showcase-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: #fff; }
+.act-showcase-meta  { font-size: 12px; color: rgba(255,255,255,.7); margin-top: 3px; }
+
+/* ── HOW IT WORKS ── */
+.how-bg { background: var(--nav-bg); position: relative; overflow: hidden; }
+.how-bg::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(232,84,26,.12) 0%, transparent 60%);
+}
+.steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; position: relative; z-index: 1; }
+.step-card { text-align: center; padding: 24px 16px; }
+.step-num {
+  width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800;
+  border: 2px solid rgba(255,255,255,.15);
+}
+.step-card h3 {
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
+  color: #fff; margin-bottom: 8px;
+}
+.step-card p { font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.6; }
+.step-arrow {
+  position: absolute; top: 40px; font-size: 22px;
+  color: rgba(255,255,255,.2);
+}
+
+/* ── TÉMOIGNAGES ── */
+.testi-bg { background: var(--cream); }
+.testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.testi-card {
+  background: #fff; border-radius: 18px; padding: 28px 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.07);
+}
+.testi-stars { color: var(--gold); font-size: 16px; margin-bottom: 14px; }
+.testi-text { font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+.testi-user { display: flex; align-items: center; gap: 12px; }
+.testi-av {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: #fff;
+}
+.testi-name { font-weight: 600; font-size: 14px; }
+.testi-loc  { font-size: 12px; color: var(--gray); }
+
+/* ── STATS BAND ── */
+.stats-band {
+  background: linear-gradient(135deg, #0D2B12, #0a1f2e);
+  padding: 60px 48px;
+}
+.stats-band-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; text-align: center; }
+.band-num {
+  font-family: 'Syne', sans-serif; font-size: 44px; font-weight: 800;
+  background: linear-gradient(135deg, var(--orange), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1;
+}
+.band-lbl { font-size: 14px; color: rgba(255,255,255,.55); margin-top: 8px; }
+
+/* ── CTA FINAL ── */
+.cta-section {
+  background: linear-gradient(135deg, #0D2B12 0%, #0a1525 50%, #1a0a2e 100%);
+  padding: 100px 48px; text-align: center; position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 70% at 50% 50%, rgba(232,84,26,.15) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0,180,216,.12) 0%, transparent 50%);
+}
+.cta-content { position: relative; z-index: 1; }
+.cta-section h2 {
+  font-family: 'Syne', sans-serif; font-size: 44px; font-weight: 800;
+  color: #fff; margin-bottom: 16px; letter-spacing: -1px; line-height: 1.1;
+}
+.cta-section h2 span {
+  background: linear-gradient(135deg, var(--orange), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cta-section p { font-size: 17px; color: rgba(255,255,255,.6); margin-bottom: 36px; font-weight: 300; }
+.cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+/* ── FOOTER ── */
+footer {
+  background: #071509; padding: 40px 48px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+}
+.footer-brand {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px;
+}
+.footer-brand .o { color: var(--orange); }
+.footer-brand .g { color: var(--blue); }
+.footer-brand .b { color: var(--blue); }
+footer p { font-size: 13px; color: rgba(255,255,255,.3); }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { font-size: 13px; color: rgba(255,255,255,.4); text-decoration: none; transition: color .2s; }
+.footer-links a:hover { color: #fff; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.feat-card, .act-showcase, .testi-card, .step-card {
+  animation: fadeUp .6s ease both;
+}
+.feat-card:nth-child(1),.act-showcase:nth-child(1),.testi-card:nth-child(1) { animation-delay:.05s }
+.feat-card:nth-child(2),.act-showcase:nth-child(2),.testi-card:nth-child(2) { animation-delay:.12s }
+.feat-card:nth-child(3),.act-showcase:nth-child(3),.testi-card:nth-child(3) { animation-delay:.19s }
+.feat-card:nth-child(4) { animation-delay:.26s }
+.feat-card:nth-child(5) { animation-delay:.33s }
+.feat-card:nth-child(6) { animation-delay:.40s }
+
+@media (max-width: 900px) {
+  .hero { padding: 100px 24px 60px; }
+  .hero h1 { font-size: 36px; }
+  .hero-visual { display: none; }
+  section { padding: 60px 24px; }
+  .features-grid, .acts-grid, .testi-grid, .steps-grid { grid-template-columns: 1fr; }
+  .stats-band-grid { grid-template-columns: repeat(2,1fr); }
+  .navbar { padding: 0 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="/landing" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+    <img src="/static/img/logo.png" alt="Let's Meet Morocco" style="height:46px;width:46px;object-fit:contain;border-radius:8px">
+    <div style="font-family:'Syne',sans-serif;line-height:1.15;display:flex;flex-direction:column">
+      <span style="font-weight:800;font-size:15px;color:#fff">Let's Meet</span>
+      <span style="font-weight:700;font-size:10px;color:var(--gold);letter-spacing:1.5px">MOROCCO</span>
+    </div>
+  </a>
+  <div class="nav-right">
+    <a href="#features" class="nav-link">Fonctionnalités</a>
+    <a href="#activities" class="nav-link">Activités</a>
+    <a href="#how" class="nav-link">Comment ça marche</a>
+    <a href="/login" class="nav-link">Se connecter</a>
+    <a href="/register" class="nav-cta">S'inscrire gratuitement →</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg-img"></div>
+  <div class="hero-bg"></div>
+  <div class="hero-dots"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">🇲🇦 Made for Morocco</div>
+    <h1>
+      Rencontre des gens,<br>
+      <span class="accent">vis des expériences</span><br>
+      <span class="accent2">près de toi</span>
+    </h1>
+    <p class="hero-sub">
+      Let's Meet Morocco te connecte avec des personnes partageant tes passions
+      pour créer des activités inoubliables dans ta ville.
+    </p>
+    <div class="hero-actions">
+      <a href="/register" class="btn-hero-main">🚀 Commencer gratuitement</a>
+      <a href="#features" class="btn-hero-sec">Découvrir l'app ↓</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="n">{{nb_users}}+</div>
+        <div class="l">Membres actifs</div>
+      </div>
+      <div class="hero-stat" style="border-left:1px solid rgba(255,255,255,.1);padding-left:36px">
+        <div class="n">{{nb_acts}}+</div>
+        <div class="l">Activités ouvertes</div>
+      </div>
+      <div class="hero-stat" style="border-left:1px solid rgba(255,255,255,.1);padding-left:36px">
+        <div class="n">8</div>
+        <div class="l">Villes au Maroc</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Cards -->
+  <div class="hero-visual">
+    <div class="floating-card">
+      <img class="fc-img"
+           src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=300&q=80"
+           alt="Football">
+      <span class="fc-badge" style="background:rgba(0,180,216,.2);color:#00B4D8">⚽ Football</span>
+      <div class="fc-title">Match Amical</div>
+      <div class="fc-meta">📍 Marrakech · 8/10</div>
+      <div class="fc-prog"><div class="fc-prog-bar" style="width:80%;background:var(--blue)"></div></div>
+    </div>
+    <div class="floating-card">
+      <img class="fc-img"
+           src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=300&q=80"
+           alt="Café">
+      <span class="fc-badge" style="background:rgba(198,124,58,.2);color:#C67C3A">☕ Café</span>
+      <div class="fc-title">Café Étudiant</div>
+      <div class="fc-meta">📍 Casablanca · 3/6</div>
+      <div class="fc-prog"><div class="fc-prog-bar" style="width:50%;background:var(--gold)"></div></div>
+    </div>
+    <div class="floating-card">
+      <img class="fc-img"
+           src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=300&q=80"
+           alt="Yoga">
+      <span class="fc-badge" style="background:rgba(123,45,139,.2);color:#7B2D8B">🧘 Yoga</span>
+      <div class="fc-title">Yoga Matinal</div>
+      <div class="fc-meta">📍 Rabat · 5/8</div>
+      <div class="fc-prog"><div class="fc-prog-bar" style="width:62%;background:var(--purple)"></div></div>
+    </div>
+    <div class="floating-card">
+      <img class="fc-img"
+           src="https://images.unsplash.com/photo-1472120435266-53107fd0c44a?w=300&q=80"
+           alt="Sunset">
+      <span class="fc-badge" style="background:rgba(232,84,26,.2);color:#E8541A">🌅 Détente</span>
+      <div class="fc-title">Coucher de Soleil</div>
+      <div class="fc-meta">📍 Agadir · 4/10</div>
+      <div class="fc-prog"><div class="fc-prog-bar" style="width:40%;background:var(--orange)"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FONCTIONNALITÉS ── -->
+<section class="features-bg" id="features">
+  <div style="max-width:1160px;margin:0 auto">
+    <div class="section-center">
+      <div class="section-eyebrow" style="background:rgba(232,84,26,.1);color:var(--orange)">
+        ✨ Pourquoi Let's Meet Morocco ?
+      </div>
+      <h2 class="section-title">Tout ce qu'il te faut pour<br>te connecter avec ta ville</h2>
+      <p class="section-sub">Une plateforme pensée pour les Marocains, avec des fonctionnalités conçues pour faciliter les vraies rencontres.</p>
+    </div>
+    <div class="features-grid">
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(0,180,216,.1)">🎯</div>
+        <h3>Trouve ton activité idéale</h3>
+        <p>Filtre par type, ville, date ou mot-clé. Sport, culture, détente — il y en a pour tous les goûts et tous les niveaux.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(232,84,26,.1)">👥</div>
+        <h3>Rencontre des gens près de toi</h3>
+        <p>Connecte-toi avec des personnes partageant tes passions dans ta ville. Crée des liens authentiques au-delà des écrans.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(123,45,139,.1)">🔒</div>
+        <h3>Environnement sécurisé</h3>
+        <p>Vérification d'âge obligatoire (18+), validation par administrateur, système de réputation et signalement pour une communauté saine.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(0,180,216,.1)">💬</div>
+        <h3>Chat de groupe intégré</h3>
+        <p>Chaque activité dispose d'un chat dédié pour organiser les détails, coordonner les horaires et faire connaissance avant le jour J.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(245,166,35,.1)">⭐</div>
+        <h3>Système de réputation</h3>
+        <p>Note les participants, laisse des avis après chaque activité. La confiance est au cœur de notre communauté.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(0,180,216,.1)">🗺️</div>
+        <h3>Carte interactive</h3>
+        <p>Visualise toutes les activités disponibles sur une carte de ta ville en temps réel et trouve celles qui sont proches de toi.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── ACTIVITÉS ── -->
+<section class="activities-bg" id="activities">
+  <div style="max-width:1160px;margin:0 auto">
+    <div class="section-center">
+      <div class="section-eyebrow" style="background:rgba(0,180,216,.1);color:var(--blue)">
+        🎯 Des activités pour tous
+      </div>
+      <h2 class="section-title">Sport, culture, détente —<br>à toi de choisir</h2>
+      <p class="section-sub">Rejoins des activités sportives, des sorties culturelles ou des moments de détente avec des gens passionnés comme toi.</p>
+    </div>
+
+    <div class="acts-grid">
+      <div class="act-showcase">
+        <img src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80" alt="Football">
+        <div class="act-showcase-overlay"></div>
+        <div class="act-showcase-info">
+          <span class="act-showcase-badge" style="background:rgba(0,180,216,.85);color:#fff">⚽ Sport</span>
+          <div class="act-showcase-title">Football & Basketball</div>
+          <div class="act-showcase-meta">Matchs amicaux, tous niveaux</div>
+        </div>
+      </div>
+      <div class="act-showcase">
+        <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80" alt="Running">
+        <div class="act-showcase-overlay"></div>
+        <div class="act-showcase-info">
+          <span class="act-showcase-badge" style="background:rgba(21,101,192,.85);color:#fff">🏃 Fitness</span>
+          <div class="act-showcase-title">Course & Yoga</div>
+          <div class="act-showcase-meta">Matinées sportives en plein air</div>
+        </div>
+      </div>
+      <div class="act-showcase">
+        <img src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=600&q=80" alt="Café">
+        <div class="act-showcase-overlay"></div>
+        <div class="act-showcase-info">
+          <span class="act-showcase-badge" style="background:rgba(198,124,58,.85);color:#fff">☕ Détente</span>
+          <div class="act-showcase-title">Cafés & Restaurants</div>
+          <div class="act-showcase-meta">Rencontres entre étudiants</div>
+        </div>
+      </div>
+      <div class="act-showcase">
+        <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&q=80" alt="Ville">
+        <div class="act-showcase-overlay"></div>
+        <div class="act-showcase-info">
+          <span class="act-showcase-badge" style="background:rgba(0,96,100,.85);color:#fff">🏙️ Culture</span>
+          <div class="act-showcase-title">Explorer la ville</div>
+          <div class="act-showcase-meta">Médinas, musées, lieux cachés</div>
+        </div>
+      </div>
+      <div class="act-showcase">
+        <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80" alt="Sunset">
+        <div class="act-showcase-overlay"></div>
+        <div class="act-showcase-info">
+          <span class="act-showcase-badge" style="background:rgba(230,81,0,.85);color:#fff">🌅 Nature</span>
+          <div class="act-showcase-title">Couchers de soleil</div>
+          <div class="act-showcase-meta">Moments magiques à partager</div>
+        </div>
+      </div>
+      <div class="act-showcase">
+        <img src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&q=80" alt="Gaming">
+        <div class="act-showcase-overlay"></div>
+        <div class="act-showcase-info">
+          <span class="act-showcase-badge" style="background:rgba(74,20,140,.85);color:#fff">🎮 Loisirs</span>
+          <div class="act-showcase-title">Jeux & Cinema</div>
+          <div class="act-showcase-meta">PlayStation, jeux de société</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:40px">
+      <a href="/register" class="btn-hero-main">Voir toutes les activités →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMMENT ÇA MARCHE ── -->
+<section class="how-bg" id="how">
+  <div style="max-width:1160px;margin:0 auto">
+    <div class="section-center">
+      <div class="section-eyebrow" style="background:rgba(232,84,26,.15);color:var(--orange)">
+        🚀 Simple et rapide
+      </div>
+      <h2 class="section-title" style="color:#fff">En 4 étapes,<br>tu rencontres de nouvelles personnes</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(232,84,26,.2);color:var(--orange);border-color:rgba(232,84,26,.3)">1</div>
+        <h3>Crée ton compte</h3>
+        <p>Inscris-toi gratuitement en quelques minutes. Ajoute ta ville, ta photo et tes centres d'intérêt.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(0,180,216,.2);color:var(--blue);border-color:rgba(0,180,216,.3)">2</div>
+        <h3>Explore les activités</h3>
+        <p>Parcours la liste ou la carte. Filtre par type, date ou ville pour trouver ce qui te correspond.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)">3</div>
+        <h3>Rejoins ou crée</h3>
+        <p>Rejoins une activité existante ou crée la tienne en 3 clics et invite d'autres membres.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(245,166,35,.2);color:var(--gold);border-color:rgba(245,166,35,.3)">4</div>
+        <h3>Vis l'expérience !</h3>
+        <p>Retrouve les participants, discute dans le chat de groupe et vis un moment inoubliable.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TÉMOIGNAGES ── -->
+<section class="testi-bg">
+  <div style="max-width:1160px;margin:0 auto">
+    <div class="section-center">
+      <div class="section-eyebrow" style="background:rgba(245,166,35,.1);color:var(--gold)">
+        💬 Ils nous font confiance
+      </div>
+      <h2 class="section-title">Ce que disent nos membres</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"J'ai rejoint un match de football la semaine de mon arrivée à Marrakech. Maintenant j'ai des amis dans toute la ville. Cette app a changé ma vie étudiante !"</p>
+        <div class="testi-user">
+          <div class="testi-av" style="background:linear-gradient(135deg,#E8541A,#00B4D8)">YA</div>
+          <div>
+            <div class="testi-name">Youssef A.</div>
+            <div class="testi-loc">📍 Marrakech · Étudiant</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"En tant que nouvelle arrivante à Casablanca, j'avais du mal à me faire des amis. Grâce à Let's Meet Morocco, j'ai trouvé des partenaires de yoga et bien plus !"</p>
+        <div class="testi-user">
+          <div class="testi-av" style="background:linear-gradient(135deg,#E8541A,#F5A623)">SB</div>
+          <div>
+            <div class="testi-name">Salma B.</div>
+            <div class="testi-loc">📍 Casablanca · Professionnelle</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Super application ! Je cours chaque matin avec un groupe que j'ai rencontré ici. La carte est super pratique pour trouver des activités proches de chez moi."</p>
+        <div class="testi-user">
+          <div class="testi-av" style="background:linear-gradient(135deg,#7B2D8B,#00B4D8)">OC</div>
+          <div>
+            <div class="testi-name">Omar C.</div>
+            <div class="testi-loc">📍 Rabat · Sportif</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stats-band">
+  <div style="max-width:1160px;margin:0 auto">
+    <div class="stats-band-grid">
+      <div>
+        <div class="band-num">{{nb_users}}+</div>
+        <div class="band-lbl">Membres inscrits</div>
+      </div>
+      <div>
+        <div class="band-num">{{nb_acts}}+</div>
+        <div class="band-lbl">Activités créées</div>
+      </div>
+      <div>
+        <div class="band-num">8</div>
+        <div class="band-lbl">Villes couvertes</div>
+      </div>
+      <div>
+        <div class="band-num">100%</div>
+        <div class="band-lbl">Gratuit pour tous</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CTA FINAL ── -->
+<section class="cta-section">
+  <div class="cta-content">
+    <h2>Prêt à rencontrer ta<br><span>prochaine aventure</span> ? 🚀</h2>
+    <p>Rejoins la communauté Let's Meet Morocco aujourd'hui — c'est gratuit !</p>
+    <div class="cta-btns">
+      <a href="/register" class="btn-hero-main" style="font-size:16px;padding:16px 36px">
+        🚀 Créer mon compte gratuitement
+      </a>
+      <a href="/login" class="btn-hero-sec" style="font-size:15px;padding:16px 28px">
+        J'ai déjà un compte →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div>
+    <img src="/static/img/logo.png" alt="Let's Meet Morocco" style="height:52px;width:52px;object-fit:contain;border-radius:8px">
+  </div>
+  <div class="footer-links">
+    <a href="#features">Fonctionnalités</a>
+    <a href="#activities">Activités</a>
+    <a href="#how">Comment ça marche</a>
+    <a href="/login">Connexion</a>
+    <a href="/register">Inscription</a>
+  </div>
+  <p>© 2025 Let's Meet Morocco · Tous droits réservés</p>
+</footer>
+
+  <!-- Footer légal -->
+  <div style="background:#0a0a0a;padding:24px;text-align:center;border-top:1px solid #1a1a1a">
+    <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;font-size:12px;color:#666">
+      <a href="/a-propos" style="color:#666;text-decoration:none">À propos</a>
+      <a href="/cgu" style="color:#666;text-decoration:none">CGU</a>
+      <a href="/confidentialite" style="color:#666;text-decoration:none">Confidentialité</a>
+      <a href="/mentions-legales" style="color:#666;text-decoration:none">Mentions légales</a>
+      <a href="mailto:admin@letsmeet.ma" style="color:#666;text-decoration:none">Contact</a>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:#444">© 2026 Let's Meet Morocco · Made with ❤️ in Marrakech</div>
+  </div>
+</body>
+</html>

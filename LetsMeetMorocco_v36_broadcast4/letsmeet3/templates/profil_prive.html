@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Profil privé{% endblock %}
+{% block content %}
+<div class="main">
+  <div class="card" style="text-align:center;padding:50px">
+    <div class="avatar-circle" style="width:80px;height:80px;font-size:30px;
+         background:{{cible.get_avatar_color()}};margin:0 auto 16px">
+      {{cible.prenom[0]}}{{cible.nom[0]}}
+    </div>
+    <h2>{{cible.prenom}} {{cible.nom}}</h2>
+    <p style="color:#757575;margin-top:8px">🔒 Ce profil est privé.</p>
+    <a href="/activities" class="btn btn-outline" style="margin-top:16px">← Retour aux activités</a>
+  </div>
+</div>
+{% endblock %}

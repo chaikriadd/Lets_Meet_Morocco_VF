@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+{% block title %}Rejoindre Let's Meet Morocco{% endblock %}
+{% block head %}
+<style>
+/* ── REGISTER PAGE STYLE MEETUP ── */
+.reg-wrap{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;background:#fff}
+
+/* ── LEFT: Formulaire ── */
+.reg-left{padding:40px 48px;display:flex;flex-direction:column;overflow-y:auto}
+.reg-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.reg-logo img{height:44px;width:44px;object-fit:contain;border-radius:8px}
+.reg-logo-txt{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#0D2B12;line-height:1.1}
+.reg-logo-txt span{color:#B5873A;font-size:11px;letter-spacing:1.5px;font-weight:600}
+
+/* Progress bar Meetup style */
+.reg-progress{display:flex;gap:4px;margin-bottom:32px}
+.reg-bar{height:5px;flex:1;border-radius:3px;background:#E8EDE9;transition:background .3s}
+.reg-bar.done{background:#1a5c2a}
+.reg-bar.active{background:#2DB54C}
+
+.reg-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#0D2B12;margin-bottom:6px}
+.reg-sub{font-size:14px;color:#7a8c82;margin-bottom:24px;line-height:1.6}
+
+.form-field{margin-bottom:16px}
+.form-field label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
+.form-field input,.form-field select,.form-field textarea{
+ width:100%;padding:12px 14px;border:1.5px solid #E0E8E2;border-radius:12px;
+ font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;
+ background:#FAFCFA;color:#0D2B12;
+}
+.form-field input:focus,.form-field select:focus{border-color:#2DB54C;background:#fff;box-shadow:0 0 0 3px rgba(45,181,76,.1)}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Centres d'intérêt style Meetup — pills cliquables */
+.interest-section{margin-bottom:14px}
+.interest-header{display:flex;align-items:center;justify-content:space-between;padding:12px 0;cursor:pointer;border-bottom:1px solid #E8EDE9}
+.interest-header-left{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#374151}
+.interest-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.interest-pills{display:flex;flex-wrap:wrap;gap:8px;padding:12px 0}
+.interest-pill{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:7px 14px;border-radius:100px;
+ border:1.5px solid #E0E8E2;background:#fff;
+ font-size:13px;font-weight:500;color:#4B5563;
+ cursor:pointer;transition:all .2s;user-select:none;
+}
+.interest-pill:hover{border-color:#2DB54C;color:#1a5c2a;background:#F0FBF1}
+.interest-pill.selected{background:#1a5c2a;color:#fff;border-color:#1a5c2a}
+.interest-pill .pill-icon{font-size:15px}
+
+/* Counter */
+.interest-counter{
+ position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+ background:#1a5c2a;color:#fff;padding:12px 24px;border-radius:100px;
+ font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);
+ display:none;z-index:100;transition:all .3s;
+}
+.interest-counter.show{display:block}
+
+/* Photo upload */
+.photo-upload-zone{
+ border:2px dashed #E0E8E2;border-radius:16px;padding:32px;
+ text-align:center;cursor:pointer;transition:all .2s;
+}
+.photo-upload-zone:hover{border-color:#2DB54C;background:#F0FBF1}
+.photo-preview{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #2DB54C;margin:0 auto 10px;display:none}
+
+/* CTA Button */
+.btn-register{
+ width:100%;padding:14px;background:linear-gradient(135deg,#1a5c2a,#2DB54C);
+ color:#fff;border:none;border-radius:12px;font-family:'Syne',sans-serif;
+ font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;
+ box-shadow:0 4px 14px rgba(45,181,76,.3);
+}
+.btn-register:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(45,181,76,.4)}
+.btn-register:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Steps navigation */
+.step-nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.btn-back{background:none;border:1.5px solid #E0E8E2;color:#666;padding:11px 20px;
+ border-radius:12px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-back:hover{background:#F4F6F4;border-color:#ccc}
+.btn-next{background:#1a5c2a;color:#fff;border:none;padding:11px 28px;
+ border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-next:hover{background:#2DB54C}
+
+/* ── RIGHT: Visuel ── */
+.reg-right{
+ background:linear-gradient(145deg,#0D2B12 0%,#1a5c2a 40%,#0a1f2e 100%);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ padding:48px;position:relative;overflow:hidden;
+}
+.reg-right::before{
+ content:'';position:absolute;inset:0;
+ background:radial-gradient(ellipse 70% 60% at 30% 50%,rgba(45,181,76,.2),transparent),
+ radial-gradient(ellipse 50% 50% at 80% 20%,rgba(181,135,58,.1),transparent);
+}
+.reg-visual-content{position:relative;z-index:1;text-align:center}
+.reg-visual-logo{width:90px;height:90px;object-fit:contain;border-radius:20px;
+ box-shadow:0 16px 48px rgba(0,0,0,.3);margin-bottom:28px}
+.reg-visual-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;
+ color:#fff;line-height:1.2;margin-bottom:14px}
+.reg-visual-title span{color:#F5A623}
+.reg-visual-sub{font-size:15px;color:rgba(255,255,255,.7);line-height:1.7;max-width:280px;margin:0 auto 32px}
+.reg-pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px}
+.reg-pill-v{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+ color:#fff;padding:7px 14px;border-radius:100px;font-size:12px;font-weight:500}
+.reg-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%}
+.reg-stat{background:rgba(255,255,255,.08);border-radius:14px;padding:14px;text-align:center;
+ border:1px solid rgba(255,255,255,.1)}
+.reg-stat-n{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff}
+.reg-stat-l{font-size:11px;color:rgba(255,255,255,.6);margin-top:3px}
+
+/* Mobile */
+@media(max-width:768px){
+ .reg-wrap{grid-template-columns:1fr}
+ .reg-right{display:none}
+ .reg-left{padding:24px 20px}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reg-wrap">
+
+ <!-- ══ LEFT: FORMULAIRE ══ -->
+ <div class="reg-left">
+ <!-- Logo -->
+ <div class="reg-logo">
+ <img src="{{ url_for('static',filename='img/logo.png') }}" alt="Let's Meet Morocco">
+ <div class="reg-logo-txt">
+ Let's Meet<br><span>MOROCCO</span>
+ </div>
+ </div>
+
+ <!-- Barre de progression -->
+ <div class="reg-progress">
+ <div class="reg-bar active" id="bar1"></div>
+ <div class="reg-bar" id="bar2"></div>
+ <div class="reg-bar" id="bar3"></div>
+ </div>
+
+ {% if error %}
+ <div style="background:#FEECEC;color:#B91C1C;border-left:4px solid #E84545;
+ padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:16px">
+ ⚠️ {{error}}
+ </div>
+ {% endif %}
+
+ <form method="POST" enctype="multipart/form-data" id="reg-form">
+ <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+
+ <!-- ══ ÉTAPE 1: Infos de base ══ -->
+ <div id="step1">
+ <div class="reg-title">Rejoins la communauté !</div>
+ <div class="reg-sub">Crée ton compte en 3 étapes simples et commence à rencontrer des gens près de toi.</div>
+
+ <div class="form-row2">
+ <div class="form-field">
+ <label>Prénom *</label>
+ <input type="text" name="prenom" placeholder="Ahmed" required>
+ </div>
+ <div class="form-field">
+ <label>Nom *</label>
+ <input type="text" name="nom" placeholder="Alami" required>
+ </div>
+ </div>
+ <div class="form-field">
+ <label>Email *</label>
+ <input type="email" name="email" placeholder="ton@email.com" required>
+ </div>
+ <div class="form-row2">
+ <div class="form-field">
+ <label>Mot de passe *</label>
+ <input type="password" name="password" placeholder="••••••••" minlength="6" required id="pwd-inp" oninput="checkPwd(this)">
+ <div id="pwd-str" style="font-size:11px;margin-top:4px"></div>
+ </div>
+ <div class="form-field">
+ <label>Confirmer *</label>
+ <input type="password" name="confirm_password" placeholder="••••••••" required>
+ </div>
+ </div>
+ <div class="form-row2">
+ <div class="form-field">
+ <label>Date de naissance *</label>
+ <input type="date" name="date_naissance" max="{{max_date}}" required>
+ </div>
+ <div class="form-field">
+ <label>Ville *</label>
+ <select name="ville" required>
+ <option value="">Choisis ta ville</option>
+ {% for v in villes %}<option>{{v}}</option>{% endfor %}
+ </select>
+ </div>
+ </div>
+ <div class="form-field">
+ <label>Bio <span style="font-weight:400;color:#999">(optionnelle)</span></label>
+ <input type="text" name="bio" placeholder="Dis quelque chose sur toi...">
+ </div>
+
+ <button type="button" class="btn-next" onclick="goStep(2)" style="width:100%;padding:14px;font-size:15px;border-radius:12px">
+ Continuer →
+ </button>
+ <p style="text-align:center;margin-top:14px;font-size:13px;color:#888">
+ Déjà un compte ? <a href="/login" style="color:#1a5c2a;font-weight:600">Se connecter</a>
+ </p>
+ </div>
+
+ <!-- ══ ÉTAPE 2: Centres d'intérêt (style Meetup) ══ -->
+ <div id="step2" style="display:none">
+ <div class="reg-title">Tes intérêts</div>
+ <div class="reg-sub">Choisis au moins <strong>5 activités</strong> qui t'intéressent pour trouver des gens qui partagent tes passions.</div>
+
+ <!-- Compteur sélectionnés -->
+ <div id="counter-bar" style="display:flex;align-items:center;justify-content:space-between;
+ background:#F0FBF1;border-radius:10px;padding:10px 14px;margin-bottom:16px;border:1px solid #d1f0d9">
+ <span style="font-size:13px;color:#1a5c2a;font-weight:500">Centres sélectionnés</span>
+ <span id="count-display" style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#1a5c2a">0 / 5 min</span>
+ </div>
+
+ {% for cat, items in activites_liste.items() %}
+ <div class="interest-section">
+ <div class="interest-header" onclick="toggleSection(this)">
+ <div class="interest-header-left">
+ <div class="interest-icon" style="background:{% if loop.index == 1 %}#FEF3C7{% elif loop.index == 2 %}#DBEAFE{% elif loop.index == 3 %}#D1FAE5{% else %}#FCE7F3{% endif %}">
+ {% if loop.index == 1 %}🏃{% elif loop.index == 2 %}🎭{% elif loop.index == 3 %}🌿{% else %}🎮{% endif %}
+ </div>
+ {{cat}}
+ </div>
+ <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" class="chevron" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+ </div>
+ <div class="interest-pills">
+ {% for item in items %}
+ {% set emojis = {'Football':'⚽','Course à pied':'🏃','Café entre étudiants':'☕','Yoga':'🧘','Natation':'🏊','Vélo':'🚴','Basketball':'🏀','Marche':'🚶','Salle de sport':'💪','Sortie restaurant':'🍽️','Cinéma':'🎬','Shopping':'🛍️','Explorer la ville':'🏙️','Visiter des lieux culturels':'🏛️','Regarder le coucher de soleil':'🌅','Glace':'🍦','Snack':'🥪','Jeux (PlayStation, jeux de société)':'🎮'} %}
+ <div class="interest-pill" onclick="togglePill(this,'{{item}}')" data-val="{{item}}">
+ <span class="pill-icon">{{emojis.get(item,'🎯')}}</span>
+ {{item}}
+ </div>
+ {% endfor %}
+ </div>
+ </div>
+ {% endfor %}
+
+ <!-- Hidden inputs pour centres -->
+ <div id="centres-inputs"></div>
+
+ <div class="step-nav" style="margin-top:20px">
+ <button type="button" class="btn-back" onclick="goStep(1)">← Retour</button>
+ <button type="button" class="btn-next" id="btn-step2-next" onclick="goStep(3)" disabled>
+ Continuer →
+ </button>
+ </div>
+ </div>
+
+ <!-- ══ ÉTAPE 3: Photo de profil ══ -->
+ <div id="step3" style="display:none">
+ <div class="reg-title">Ta photo de profil</div>
+ <div class="reg-sub">Ajoute une photo pour que les gens te reconnaissent. Tu peux aussi le faire plus tard.</div>
+
+ <div class="photo-upload-zone" id="photo-zone" onclick="document.getElementById('photo-inp').click()">
+ <img id="photo-preview" class="photo-preview" src="">
+ <div id="photo-placeholder">
+ <div style="font-size:48px;margin-bottom:8px">📷</div>
+ <div style="font-size:14px;font-weight:600;color:#374151;margin-bottom:4px">Ajouter une photo</div>
+ <div style="font-size:12px;color:#9CA3AF">JPG, PNG · Max 5MB</div>
+ </div>
+ <input type="file" id="photo-inp" name="photo" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+ </div>
+
+ <!-- Aperçu du profil -->
+ <div id="profile-preview-card" style="background:#F9FAFB;border-radius:14px;padding:16px;
+ display:flex;align-items:center;gap:14px;margin-top:16px;border:1px solid #E5E7EB">
+ <div id="preview-av" style="width:52px;height:52px;border-radius:50%;background:#1a5c2a;
+ display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;
+ font-weight:800;font-size:18px;color:#fff;overflow:hidden;flex-shrink:0">
+ ?
+ </div>
+ <div>
+ <div id="preview-name" style="font-size:15px;font-weight:600;color:#111">Ton prénom</div>
+ <div style="font-size:12px;color:#6B7280;margin-top:2px">Marrakech · Nouveau membre</div>
+ </div>
+ </div>
+
+ <div class="step-nav" style="margin-top:24px">
+ <button type="button" class="btn-back" onclick="goStep(2)">← Retour</button>
+ <button type="submit" class="btn-register" style="flex:1;margin-left:12px">
+ 🚀 Créer mon compte
+ </button>
+ </div>
+
+ <p style="text-align:center;margin-top:12px;font-size:11px;color:#9CA3AF;line-height:1.6">
+ En créant ton compte, tu acceptes nos <a href="/cgu" style="color:#1a5c2a">CGU</a>
+ et notre <a href="/confidentialite" style="color:#1a5c2a">politique de confidentialité</a>.
+ </p>
+ </div>
+
+ </form>
+ </div>
+
+ <!-- ══ RIGHT: VISUEL ══ -->
+ <div class="reg-right">
+ <div class="reg-visual-content">
+ <img src="{{ url_for('static',filename='img/logo.png') }}" class="reg-visual-logo" alt="Logo">
+ <div class="reg-visual-title">
+ Rencontre des gens,<br>
+ <span>vis des aventures</span>
+ </div>
+ <div class="reg-visual-sub">
+ Rejoins une communauté de jeunes marocains qui partagent tes passions. Sport, culture, sorties...
+ </div>
+ <div class="reg-pills">
+ {% for pill in ['⚽ Football','☕ Café','🧘 Yoga','🏀 Basketball','🌅 Sorties','🚴 Vélo','🍽️ Restos','🏛️ Culture'] %}
+ <span class="reg-pill-v">{{pill}}</span>
+ {% endfor %}
+ </div>
+ <div class="reg-stats">
+ <div class="reg-stat">
+ <div class="reg-stat-n">100%</div>
+ <div class="reg-stat-l">Gratuit</div>
+ </div>
+ <div class="reg-stat">
+ <div class="reg-stat-n">🇲🇦</div>
+ <div class="reg-stat-l">Made in Morocco</div>
+ </div>
+ <div class="reg-stat">
+ <div class="reg-stat-n">18+</div>
+ <div class="reg-stat-l">Communauté</div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentStep = 1;
+let selectedCentres = new Set();
+
+function goStep(n) {
+ // Validate step 1 before proceeding
+ if (n === 2 && currentStep === 1) {
+ const fields = ['prenom','nom','email','password','confirm_password','date_naissance','ville'];
+ const form = document.getElementById('reg-form');
+ let ok = true;
+ fields.forEach(f => {
+ const el = form.querySelector(`[name="${f}"]`);
+ if (el && !el.value.trim()) { el.focus(); ok = false; }
+ });
+ const pwd = form.querySelector('[name="password"]').value;
+ const cpwd = form.querySelector('[name="confirm_password"]').value;
+ if (pwd !== cpwd) {
+ alert('Les mots de passe ne correspondent pas.');
+ return;
+ }
+ if (!ok) { alert('Remplis tous les champs obligatoires.'); return; }
+ // Update preview name
+ const prenom = form.querySelector('[name="prenom"]').value;
+ document.getElementById('preview-name').textContent = prenom + ' ' + form.querySelector('[name="nom"]').value;
+ const av = document.getElementById('preview-av');
+ if (prenom) av.textContent = prenom[0].toUpperCase() + (form.querySelector('[name="nom"]').value[0]||'').toUpperCase();
+ }
+
+ // Show step
+ document.getElementById('step' + currentStep).style.display = 'none';
+ document.getElementById('step' + n).style.display = 'block';
+
+ // Update progress bars
+ ['bar1','bar2','bar3'].forEach((id, i) => {
+ const bar = document.getElementById(id);
+ bar.className = 'reg-bar' + (i + 1 < n ? ' done' : (i + 1 === n ? ' active' : ''));
+ });
+
+ currentStep = n;
+ window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function togglePill(el, val) {
+ if (el.classList.contains('selected')) {
+ el.classList.remove('selected');
+ selectedCentres.delete(val);
+ } else {
+ el.classList.add('selected');
+ selectedCentres.add(val);
+ }
+ updateCentresInputs();
+ const count = selectedCentres.size;
+ document.getElementById('count-display').textContent = count + (count >= 5 ? ' ✅' : ' / 5 min');
+ document.getElementById('btn-step2-next').disabled = count < 5;
+}
+
+function updateCentresInputs() {
+ const container = document.getElementById('centres-inputs');
+ container.innerHTML = '';
+ selectedCentres.forEach(v => {
+ const inp = document.createElement('input');
+ inp.type = 'hidden'; inp.name = 'centres'; inp.value = v;
+ container.appendChild(inp);
+ });
+}
+
+function toggleSection(el) {
+ const pills = el.nextElementSibling;
+ const chevron = el.querySelector('.chevron');
+ const isOpen = pills.style.display !== 'none';
+ pills.style.display = isOpen ? 'none' : 'flex';
+ chevron.style.transform = isOpen ? 'rotate(-90deg)' : 'rotate(0deg)';
+}
+
+function previewPhoto(inp) {
+ if (!inp.files || !inp.files[0]) return;
+ const reader = new FileReader();
+ reader.onload = e => {
+ const preview = document.getElementById('photo-preview');
+ const placeholder = document.getElementById('photo-placeholder');
+ const av = document.getElementById('preview-av');
+ preview.src = e.target.result;
+ preview.style.display = 'block';
+ placeholder.style.display = 'none';
+ av.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
+ };
+ reader.readAsDataURL(inp.files[0]);
+}
+
+function checkPwd(inp) {
+ const v = inp.value;
+ const el = document.getElementById('pwd-str');
+ let score = 0;
+ if (v.length >= 6) score++;
+ if (/\d/.test(v)) score++;
+ if (/[A-Z]/.test(v)) score++;
+ if (v.length >= 10) score++;
+ const states = [
+ {txt:'', col:''},
+ {txt:'Trop court', col:'#E84545'},
+ {txt:'Correct', col:'#F5A623'},
+ {txt:'Bon 👍', col:'#2DB54C'},
+ {txt:'Fort 💪', col:'#16a34a'},
+ ];
+ const s = states[Math.min(score, 4)];
+ el.textContent = s.txt;
+ el.style.color = s.col;
+}
+</script>
+{% endblock %}
