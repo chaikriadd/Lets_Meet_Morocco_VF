@@ -1072,7 +1072,6 @@ def login():
         pwd   = request.form.get("password","").strip()
         # Login utilisateur UNIQUEMENT (admin a sa propre URL /admin/login)
         user = User.query.filter_by(email=email).first()
-        user = User.query.filter_by(email=email).first()
 
 # ✅ AJOUTER CES LIGNES ICI
 if user and not user.email_verifie:
@@ -1080,8 +1079,6 @@ if user and not user.email_verifie:
     return render_template("login.html", error=error)
 
 if user and user.verifier_mdp(pwd):
-    # ... le reste du code
-        if user and user.verifier_mdp(pwd):
             if user.est_bloque:
                 error = "Compte bloqué. Contacte l'administrateur."
             elif not user.est_valide:
