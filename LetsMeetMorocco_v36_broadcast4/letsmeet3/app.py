@@ -105,9 +105,6 @@ ALLOWED_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
 
 db = SQLAlchemy(app)
 
-with app.app_context():
-    db.create_all()
-
 # Flask-Migrate (optionnel — migrations DB)
 try:
     from flask_migrate import Migrate
@@ -3021,6 +3018,10 @@ def too_large(e):
 # ============================================================
 # LANCEMENT
 # ============================================================
+# Créer les tables après que tous les modèles soient définis
+with app.app_context():
+    db.create_all()
+
 
 if __name__ == "__main__":
     with app.app_context():
