@@ -105,6 +105,9 @@ ALLOWED_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
 
 db = SQLAlchemy(app)
 
+with app.app_context():
+    db.create_all()
+
 # Flask-Migrate (optionnel — migrations DB)
 try:
     from flask_migrate import Migrate
